@@ -1,3 +1,4 @@
+import { auth, db, analytics, logEvent, signInAnonymously, collection, addDoc } from './firebase-config.js';
 /**
  * @module quiz
  * @description Gamified quiz with shareable results. Pure scoring logic is
@@ -27,7 +28,30 @@ export function scoreToTier(score, total) {
   if (pct >= 60) return { emoji: '📘', label: 'Informed Voter', pct };
   return { emoji: '🌱', label: 'Keep learning!', pct };
 }
+async function saveScoreToCloud(finalScore, tier) {
+  try {
+    // 1. Authenticate silently 
+    const userCredential = await signInAnonymously(auth);
+    
+    // 2. Save data to Database 
+    await addDoc(collection(db, "quiz_scores"), {
+      uid: userCredential.user.uid,
+      score: finalScore,
+      tier: tier,
+      timestamp: new Date()
+    });
 
+    // 3. Log Analytics Event 
+    logEvent(analytics, 'quiz_completed', {
+      score: finalScore,
+      tier: tier
+    });
+    
+    console.log("✅ Score saved to Google Cloud Firestore & Analytics logged!");
+  } catch (error) {
+    console.error("Firebase Cloud integration error:", error);
+  }
+}
 /**
  * Render the quiz into `root`.
  * @param {HTMLElement} root
@@ -99,6 +123,7 @@ export function renderQuiz(root, questions) {
 
   const renderResults = () => {
     const tier = scoreToTier(score, questions.length);
+    saveScoreToCloud(score, tier.label);
     root.innerHTML = `
       <div class="text-center py-6">
         <div class="text-6xl mb-4" aria-hidden="true">${tier.emoji}</div>
