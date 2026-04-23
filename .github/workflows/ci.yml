@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run tests
+        run: npm test
+      - name: Verify repo size (<10 MB)
+        run: |
+          SIZE=$(du -sb . --exclude=.git --exclude=node_modules | cut -f1)
+          echo "Repo size: $SIZE bytes"
+          if [ $SIZE -gt 10485760 ]; then
+            echo "❌ Repo exceeds 10 MB limit"
+            exit 1
+          fi
+          echo "✅ Repo size within 10 MB limit"
+
+  validate-content:
+    name: Content Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate JSON files
+        run: |
+          for f in public/data/*.json; do
+            python3 -c "import json; json.load(open('$f'))" && echo "✓ $f"
+          done
+      - name: Verify no secrets in code
+        run: |
+          if grep -rn "AIza\|sk_live\|api_key.*=" --include="*.js" --include="*.json" --include="*.md" . \
+             --exclude-dir=.git --exclude-dir=node_modules | grep -v "YOUR_KEY\|GEMINI_API_KEY\|apiKey = process.env\|set-env-vars"; then
+            echo "❌ Potential secret found"
+            exit 1
+          fi
+          echo "✅ No secrets detected"

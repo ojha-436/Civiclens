@@ -1,0 +1,13 @@
+{
+  "name": "civiclens-gemini-function",
+  "version": "1.0.0",
+  "description": "Optional Gemini-powered assistant backend for CivicLens",
+  "main": "gemini-function.js",
+  "engines": {
+    "node": "20"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.8.0",
+    "firebase-functions": "^7.2.5"
+  }
+}

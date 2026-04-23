@@ -1,0 +1,70 @@
+[
+  {
+    "icon": "📝",
+    "title": "Voter Registration",
+    "tagline": "Getting on the electoral roll",
+    "description": "Any Indian citizen who is 18 or older on 1 January of the qualifying year can register. You fill Form 6 online at voterportal.eci.gov.in or the NVSP / Voter Helpline app, or submit it on paper to your Booth Level Officer (BLO). Once verified, your name is added to the electoral roll and you receive an EPIC (Electoral Photo Identity Card) — the voter ID issued by the Election Commission of India.",
+    "safeguards": [
+      "Claims and objections period allows the public to flag errors or duplicates in the draft roll",
+      "BLOs conduct door-to-door verification in their assigned polling area",
+      "Aadhaar-EPIC linking (voluntary, under the Election Laws Amendment Act 2021) helps detect duplicate entries",
+      "Special Summary Revision published annually to update rolls"
+    ],
+    "source": "Election Commission of India · voters.eci.gov.in"
+  },
+  {
+    "icon": "📢",
+    "title": "Election Announcement",
+    "tagline": "Notification and Model Code",
+    "description": "The Election Commission of India announces the schedule — polling phases, nomination dates, and counting day. From the moment of announcement, the Model Code of Conduct (MCC) takes effect: governments cannot announce new schemes, transfer officials without ECI approval, or use state resources for campaigning. Candidates file nomination papers with an affidavit disclosing assets, liabilities, and any criminal cases.",
+    "safeguards": [
+      "Model Code of Conduct restricts ruling parties from misusing office",
+      "Mandatory criminal-record affidavit (Form 26) for every candidate",
+      "Expenditure ceilings per candidate, monitored by ECI observers",
+      "Paid news and hate speech flagged by Media Certification & Monitoring Committees"
+    ],
+    "source": "ECI Handbook for Candidates · Representation of the People Act, 1951"
+  },
+  {
+    "icon": "🗳️",
+    "title": "Polling Day",
+    "tagline": "Casting your vote on an EVM",
+    "description": "On polling day, you visit your assigned polling station (check at electoralsearch.eci.gov.in). After the Polling Officer verifies your identity against the roll using your EPIC or one of 11 alternate documents, your finger is marked with indelible ink. You press the button next to your chosen candidate's name and symbol on the Electronic Voting Machine (EVM). The VVPAT (Voter Verifiable Paper Audit Trail) unit prints a slip showing your choice, which you can see through a glass window for 7 seconds before it drops into a sealed box.",
+    "safeguards": [
+      "Indelible ink on the left index finger prevents double voting",
+      "EPIC or one of 11 ECI-approved alternate ID documents required",
+      "VVPAT paper slip lets you verify your vote was recorded correctly",
+      "Polling agents from each party observe proceedings inside the booth",
+      "Central Armed Police Forces deployed at sensitive booths"
+    ],
+    "source": "ECI · Manual on Electronic Voting Machine and VVPAT"
+  },
+  {
+    "icon": "🔒",
+    "title": "Storage & Transport",
+    "tagline": "Sealed EVMs under guard",
+    "description": "After polling closes, EVMs are sealed in the presence of polling and candidate agents, with their signatures on the seals. They are transported under armed escort to a strongroom — a designated secured facility with 24×7 CCTV surveillance and multi-party observer access. Candidates' representatives can watch the strongroom from outside at any time until counting begins.",
+    "safeguards": [
+      "Triple-layer sealing with candidate agents' signatures on all seals",
+      "Armed escort (CAPF) during transport to the strongroom",
+      "24×7 CCTV with feeds accessible to candidate representatives",
+      "Double-lock system: strongroom key held jointly by Returning Officer and observer",
+      "Randomisation of EVMs before and after polling to prevent pre-tampering"
+    ],
+    "source": "ECI · Compendium of Instructions on EVM and Strongroom Management"
+  },
+  {
+    "icon": "📊",
+    "title": "Counting & Result Declaration",
+    "tagline": "Same-day counting under observation",
+    "description": "On counting day, the strongroom is opened before all candidates' agents. Postal ballots are counted first, then EVM votes round by round at the Counting Centre. For every Assembly segment, VVPAT slips from 5 randomly selected polling stations are hand-counted and tallied against the EVM count — a Supreme Court–mandated verification. Once the Returning Officer is satisfied, results are declared and forwarded to the ECI for publication on results.eci.gov.in.",
+    "safeguards": [
+      "Mandatory VVPAT verification of 5 random polling stations per Assembly segment",
+      "Candidates' agents present at every counting table",
+      "Round-by-round totals announced publicly before proceeding",
+      "Recounting provisions under Rule 63 of Conduct of Election Rules",
+      "Election petitions can be filed in the High Court within 45 days"
+    ],
+    "source": "Supreme Court judgment in N. Chandrababu Naidu v. Union of India (2019) · Conduct of Election Rules, 1961"
+  }
+]

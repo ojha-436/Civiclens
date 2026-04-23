@@ -1,0 +1,37 @@
+{
+  "name": "civiclens-india",
+  "version": "1.0.0",
+  "description": "Non-partisan interactive education on the Indian election process, built for PromptWars 2026.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node tests/run.js",
+    "serve": "npx --yes serve public",
+    "lint": "node -e \"console.log('Zero-dep lint: use your editor\\'s ESLint/Prettier integration.')\"",
+    "deploy": "firebase deploy --only hosting",
+    "deploy:function": "cd deploy && gcloud functions deploy askGemini --gen2 --runtime=nodejs20 --trigger-http --allow-unauthenticated --region=asia-south1 --entry-point=askGemini"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "elections",
+    "civic-tech",
+    "india",
+    "eci",
+    "evm",
+    "vvpat",
+    "education",
+    "accessibility",
+    "hackathon",
+    "promptwars",
+    "google-cloud",
+    "firebase"
+  ],
+  "author": "CivicLens India Contributors",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR_USERNAME/civiclens-india"
+  }
+}

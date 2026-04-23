@@ -1,0 +1,38 @@
+[
+  {
+    "icon": "🖥️",
+    "title": "Standalone EVMs",
+    "description": "Indian EVMs are not connected to any network — no internet, Bluetooth, or Wi-Fi. They are one-time programmable, purpose-built machines manufactured by BEL and ECIL, both public-sector undertakings.",
+    "howItWorks": "The Control Unit and Ballot Unit are connected only by a 5-metre cable. There is no operating system in the conventional sense and no way to remotely access the machine. The Supreme Court and multiple expert committees have examined and upheld this design."
+  },
+  {
+    "icon": "📜",
+    "title": "VVPAT Paper Trail",
+    "description": "Every vote produces a printed paper slip visible to the voter for 7 seconds — an independent physical record that can be hand-counted.",
+    "howItWorks": "The Voter Verifiable Paper Audit Trail unit prints a slip showing the candidate's name, serial number, and symbol. The slip drops into a sealed box. If any EVM result is disputed, these slips are the ground truth. Since 2019, 5 randomly chosen VVPATs per Assembly segment are mandatorily hand-counted."
+  },
+  {
+    "icon": "🎲",
+    "title": "Two-Stage Randomisation",
+    "description": "EVMs are assigned to polling stations through two rounds of random allocation — no one knows which machine will end up where.",
+    "howItWorks": "First randomisation allocates EVMs to Assembly constituencies; the second assigns specific machines to specific polling stations — both done in the presence of candidates' representatives using ECI software. This prevents targeted pre-tampering of any specific EVM."
+  },
+  {
+    "icon": "🔏",
+    "title": "Multi-Layer Sealing",
+    "description": "EVMs are sealed at multiple stages — after mock poll, after polling closes, and before transport — with candidate agents' signatures on each seal.",
+    "howItWorks": "A pink paper seal, a green paper seal, and a special tag are applied. Candidate agents sign across the seals so any tampering is physically evident. The seals carry unique serial numbers recorded in Form 17C, which candidate agents also receive a copy of."
+  },
+  {
+    "icon": "📹",
+    "title": "Strongroom CCTV",
+    "description": "Between polling and counting, EVMs are stored in strongrooms under continuous video surveillance with candidate access.",
+    "howItWorks": "Strongrooms are sealed in candidates' presence. CCTV operates 24×7, and candidate representatives can monitor the feed from a viewing room. Central Armed Police Forces guard the premises in three concentric security rings."
+  },
+  {
+    "icon": "📝",
+    "title": "Form 17C Cross-Check",
+    "description": "Polling agents receive a signed copy of Form 17C at the close of poll — an independent record of votes cast at that booth.",
+    "howItWorks": "Form 17C captures the total number of votes recorded on the EVM at each booth. On counting day, this total must match the EVM's displayed count. Any mismatch triggers investigation. Because candidate agents hold their own copies, the total cannot be altered after the fact."
+  }
+]
