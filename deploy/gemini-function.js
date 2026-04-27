@@ -57,13 +57,19 @@ function validateQuestion(input) {
   if (typeof input !== 'string') return { valid: false, reason: 'Invalid input type' };
   const trimmed = input.trim();
   if (trimmed.length === 0) return { valid: false, reason: 'Empty question' };
-  if (trimmed.length > 500)  return { valid: false, reason: 'Question too long' };
+  if (trimmed.length > 500) return { valid: false, reason: 'Question too long' };
   if (/(\bignore\s+previous\b|\bsystem\s+prompt\b|<script|javascript:)/i.test(trimmed)) {
     return { valid: false, reason: 'Disallowed pattern detected' };
   }
   return { valid: true, value: trimmed };
 }
 const functions = require('firebase-functions');
+/**
+ * Cloud Function to handle Gemini AI requests.
+ * Incorporates prompt validation, rate limiting, and secure API communication.
+ * @param {Object} req - The Express HTTP request object.
+ * @param {Object} res - The Express HTTP response object.
+ */
 exports.askGemini = functions.https.onRequest(async (req, res) => {
   // CORS — allowlist Firebase Hosting domain
   const allowedOrigin = process.env.ALLOWED_ORIGIN || '*';
@@ -74,7 +80,7 @@ exports.askGemini = functions.https.onRequest(async (req, res) => {
   res.set('X-Content-Type-Options', 'nosniff');
   res.set('Referrer-Policy', 'no-referrer');
   if (req.method === 'OPTIONS') return res.status(204).send('');
-  if (req.method !== 'POST')    return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   // Rate limit by IP
   const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip || 'unknown';
@@ -106,9 +112,9 @@ exports.askGemini = functions.https.onRequest(async (req, res) => {
           contents: [{ parts: [{ text: `${SYSTEM_PROMPT}\n\nQuestion: ${v.value}` }] }],
           generationConfig: { temperature: 0.2, maxOutputTokens: 256, topP: 0.9 },
           safetySettings: [
-            { category: 'HARM_CATEGORY_HATE_SPEECH',       threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+            { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
             { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-            { category: 'HARM_CATEGORY_HARASSMENT',        threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
             { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' }
           ]
         }),
