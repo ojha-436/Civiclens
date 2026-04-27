@@ -31,13 +31,23 @@ export function escapeHTML(str) {
  * @returns {{ valid: boolean, reason?: string, value?: string }}
  */
 export function validateQuestion(input) {
-  if (typeof input !== 'string') return { valid: false, reason: 'Invalid input type' };
+  if (typeof input !== 'string')
+    return { valid: false, reason: 'Invalid input type' };
   const trimmed = input.trim();
-  if (trimmed.length === 0) return { valid: false, reason: 'Question cannot be empty' };
-  if (trimmed.length > 500) return { valid: false, reason: 'Question too long (max 500 characters)' };
+  if (trimmed.length === 0)
+    return { valid: false, reason: 'Question cannot be empty' };
+  if (trimmed.length > 500)
+    return { valid: false, reason: 'Question too long (max 500 characters)' };
   // Block obvious prompt-injection probes
-  if (/(\bignore\s+previous\b|\bsystem\s+prompt\b|<script|javascript:)/i.test(trimmed)) {
-    return { valid: false, reason: 'Your question contains disallowed patterns.' };
+  if (
+    /(\bignore\s+previous\b|\bsystem\s+prompt\b|<script|javascript:)/i.test(
+      trimmed
+    )
+  ) {
+    return {
+      valid: false,
+      reason: 'Your question contains disallowed patterns.',
+    };
   }
   return { valid: true, value: trimmed };
 }
@@ -78,7 +88,11 @@ export const assistantLimiter = new RateLimiter(5, 30000);
  * @returns {Promise<any>}
  */
 export async function safeFetchJSON(url, opts = {}) {
-  if (!/^https?:\/\//i.test(url) && !url.startsWith('./') && !url.startsWith('/')) {
+  if (
+    !/^https?:\/\//i.test(url) &&
+    !url.startsWith('./') &&
+    !url.startsWith('/')
+  ) {
     throw new Error('Unsafe URL scheme');
   }
   const controller = new AbortController();

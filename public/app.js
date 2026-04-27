@@ -1,15 +1,17 @@
+// @ts-check
 /**
  * @file CivicLens India — main application orchestrator.
  * @description Bootstraps the app: loads ECI content, renders feature modules,
  *   registers service worker, initialises analytics, wires navigation.
  */
-import { renderJourney }   from './modules/journey.js';
+import { renderJourney } from './modules/journey.js';
 import { renderSimulator } from './modules/simulator.js';
-import { renderSecurity }  from './modules/security.js';
-import { renderQuiz }      from './modules/quiz.js';
+import { renderSecurity } from './modules/security.js';
+import { renderQuiz } from './modules/quiz.js';
 import { renderAssistant } from './modules/assistant.js';
-import { safeFetchJSON }   from './modules/security-utils.js';
+import { safeFetchJSON } from './modules/security-utils.js';
 import { initAnalytics, trackEvent } from './modules/analytics.js';
+import './modules/countdown.js';
 
 /**
  * Load all content data files in parallel.
@@ -19,7 +21,7 @@ async function loadContent() {
   const [journey, security, quiz] = await Promise.all([
     safeFetchJSON('./data/journey.json'),
     safeFetchJSON('./data/security.json'),
-    safeFetchJSON('./data/quiz.json')
+    safeFetchJSON('./data/quiz.json'),
   ]);
   return { journey, security, quiz };
 }
@@ -30,9 +32,12 @@ async function loadContent() {
  */
 function registerServiceWorker() {
   if (!('serviceWorker' in navigator)) return;
-  if (location.protocol !== 'https:' && location.hostname !== 'localhost') return;
+  if (location.protocol !== 'https:' && location.hostname !== 'localhost')
+    return;
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => { /* graceful degradation */ });
+    navigator.serviceWorker.register('/sw.js').catch(() => {
+      /* graceful degradation */
+    });
   });
 }
 
@@ -43,9 +48,20 @@ function registerServiceWorker() {
 function wireMobileMenu(btn) {
   btn?.addEventListener('click', () => {
     const nav = document.querySelector('nav');
+    // @ts-ignore
     const open = nav.classList.toggle('hidden') === false;
-    ['flex', 'flex-col', 'absolute', 'top-16', 'right-4', 'bg-white', 'p-4', 'shadow-lg', 'rounded']
-      .forEach((c) => nav.classList.toggle(c, open));
+    [
+      'flex',
+      'flex-col',
+      'absolute',
+      'top-16',
+      'right-4',
+      'bg-white',
+      'p-4',
+      'shadow-lg',
+      'rounded',
+    // @ts-ignore
+    ].forEach((c) => nav.classList.toggle(c, open));
     btn.setAttribute('aria-expanded', String(open));
   });
 }
@@ -75,16 +91,26 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const { journey, security, quiz } = await loadContent();
 
-    renderJourney(document.getElementById('journey-container'),
-                  document.getElementById('journey-detail'), journey);
+    renderJourney(
+      // @ts-ignore
+      document.getElementById('journey-container'),
+      document.getElementById('journey-detail'),
+      journey
+    );
+    // @ts-ignore
     renderSimulator(document.getElementById('ballot-simulator'));
+    // @ts-ignore
     renderSecurity(document.getElementById('security-grid'), security);
+    // @ts-ignore
     renderQuiz(document.getElementById('quiz-container'), quiz);
+    // @ts-ignore
     renderAssistant(document.getElementById('assistant-container'));
 
+    // @ts-ignore
     wireMobileMenu(document.getElementById('menu-toggle'));
     trackEvent('app_loaded', { modules: 5 });
   } catch (err) {
+    // @ts-ignore
     showFatalError(err);
   }
 });

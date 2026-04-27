@@ -20,7 +20,9 @@ import { trackEvent } from './analytics.js';
  */
 export function renderSecurity(root, items) {
   if (!root) return;
-  root.innerHTML = items.map((item) => `
+  root.innerHTML = items
+    .map(
+      (item) => `
     <article class="bg-white border border-gray-200 rounded-lg p-5 hover:shadow-md transition">
       <div class="text-3xl mb-2" aria-hidden="true">${escapeHTML(item.icon)}</div>
       <h3 class="font-bold text-civic-deep mb-2">${escapeHTML(item.title)}</h3>
@@ -30,12 +32,15 @@ export function renderSecurity(root, items) {
         <p class="mt-2 text-gray-600">${escapeHTML(item.howItWorks)}</p>
       </details>
     </article>
-  `).join('');
+  `
+    )
+    .join('');
 
   // Track expansion of "how it works" for engagement analytics
   root.querySelectorAll('details').forEach((d, i) => {
     d.addEventListener('toggle', () => {
-      if (d.open) trackEvent('security_card_expanded', { card: items[i].title });
+      if (d.open)
+        trackEvent('security_card_expanded', { card: items[i].title });
     });
   });
 }

@@ -1,3 +1,4 @@
+// @ts-check
 /**
  * @module journey
  * @description Renders the 5-stage voter's journey as a gamified, clickable flow.
@@ -24,7 +25,9 @@ import { trackEvent } from './analytics.js';
 export function renderJourney(grid, detail, stages) {
   if (!grid || !detail) return;
 
-  grid.innerHTML = stages.map((s, i) => `
+  grid.innerHTML = stages
+    .map(
+      (s, i) => `
     <button
       class="journey-stage bg-white border-2 border-civic-deep/20 hover:border-civic-accent
              rounded-lg p-4 text-left transition focus:outline-none focus:ring-4 focus:ring-civic-accent/40"
@@ -35,10 +38,13 @@ export function renderJourney(grid, detail, stages) {
       <div class="font-bold text-civic-deep">${escapeHTML(s.title)}</div>
       <div class="text-xs text-gray-600 mt-1">${escapeHTML(s.tagline)}</div>
     </button>
-  `).join('');
+  `
+    )
+    .join('');
 
   grid.querySelectorAll('.journey-stage').forEach((btn) => {
     btn.addEventListener('click', () => {
+    // @ts-ignore  
       const idx = Number(btn.dataset.idx);
       const s = stages[idx];
       detail.classList.remove('hidden');

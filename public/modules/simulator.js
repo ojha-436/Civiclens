@@ -1,3 +1,4 @@
+// @ts-check
 /**
  * @module simulator
  * @description EVM + VVPAT polling-booth simulator.
@@ -21,14 +22,35 @@ import { trackEvent } from './analytics.js';
 
 /** @type {FictionalCandidate[]} */
 const FICTIONAL_CANDIDATES = [
-  { id: 'c1',   name: 'Candidate A', party: 'Fictional Green Party',  symbol: '🌿' },
-  { id: 'c2',   name: 'Candidate B', party: 'Fictional Blue Party',   symbol: '🟦' },
-  { id: 'c3',   name: 'Candidate C', party: 'Fictional Orange Party', symbol: '🟧' },
-  { id: 'none', name: 'NOTA',        party: 'None Of The Above',      symbol: '🚫' }
+  {
+    id: 'c1',
+    name: 'Candidate A',
+    party: 'Fictional Green Party',
+    symbol: '🌿',
+  },
+  {
+    id: 'c2',
+    name: 'Candidate B',
+    party: 'Fictional Blue Party',
+    symbol: '🟦',
+  },
+  {
+    id: 'c3',
+    name: 'Candidate C',
+    party: 'Fictional Orange Party',
+    symbol: '🟧',
+  },
+  { id: 'none', name: 'NOTA', party: 'None Of The Above', symbol: '🚫' },
 ];
 
-const STEP_LABELS = ['ID Check', 'Indelible Ink', 'Cast Vote', 'VVPAT Check', 'Done'];
-const STEP_KEYS   = ['id', 'ink', 'evm', 'vvpat', 'done'];
+const STEP_LABELS = [
+  'ID Check',
+  'Indelible Ink',
+  'Cast Vote',
+  'VVPAT Check',
+  'Done',
+];
+const STEP_KEYS = ['id', 'ink', 'evm', 'vvpat', 'done'];
 
 /**
  * Render the progress rail above the simulator.
@@ -83,7 +105,8 @@ export function renderSimulator(root) {
       <h3 class="font-bold text-civic-deep text-lg mb-3">Step 3 — Electronic Voting Machine</h3>
       <p class="text-gray-700 mb-4">Press the button next to your chosen candidate. You can vote for any candidate or choose <strong>NOTA</strong> (None Of The Above) if you reject all options.</p>
       <div class="border-4 border-gray-700 rounded-lg bg-gray-100 p-4 space-y-2" role="radiogroup" aria-label="EVM Ballot Unit (fictional candidates)">
-        ${FICTIONAL_CANDIDATES.map((c, i) => `
+        ${FICTIONAL_CANDIDATES.map(
+          (c, i) => `
           <button class="evm-btn w-full flex items-center gap-3 bg-white p-3 rounded border-2 border-gray-300 hover:border-civic-accent focus:border-civic-accent focus:outline-none focus:ring-2 focus:ring-civic-accent transition"
                   data-id="${escapeHTML(c.id)}" role="radio" aria-checked="false"
                   aria-label="Button ${i + 1}: ${escapeHTML(c.name)} of ${escapeHTML(c.party)}">
@@ -95,11 +118,13 @@ export function renderSimulator(root) {
             </div>
             <span class="w-6 h-6 rounded-full border-2 border-civic-deep bg-civic-accent/20" aria-hidden="true"></span>
           </button>
-        `).join('')}
+        `
+        ).join('')}
       </div>`,
 
     vvpat: () => {
       const picked = FICTIONAL_CANDIDATES.find((c) => c.id === state.choice);
+      if (!picked) return `<div class="text-red-500">Error: Candidate not found.</div>`;
       return `
         <h3 class="font-bold text-civic-deep text-lg mb-3">Step 4 — VVPAT Verification</h3>
         <p class="text-gray-700 mb-4">The VVPAT machine prints a paper slip showing your choice. It is visible for <strong>7 seconds</strong> before dropping into a sealed box. Check that your vote was recorded correctly.</p>
@@ -122,6 +147,7 @@ export function renderSimulator(root) {
 
     done: () => {
       const picked = FICTIONAL_CANDIDATES.find((c) => c.id === state.choice);
+      if (!picked) return '';
       return `
         <div class="text-center py-4">
           <div class="text-5xl mb-3" aria-hidden="true">✅</div>
@@ -155,10 +181,10 @@ export function renderSimulator(root) {
           </ul>
         </div>
         <button id="reset" class="bg-civic-deep text-white px-5 py-2 rounded font-semibold focus:outline-none focus:ring-4 focus:ring-civic-accent/40">Try Again</button>
-      </div>`
+      </div>`,
   };
 
-  const render = () => {
+  const render = () => {// @ts-ignore
     const body = (stepRenderers[state.step] || stepRenderers.id)();
     root.innerHTML = `
       <div class="max-w-2xl mx-auto">
@@ -170,21 +196,36 @@ export function renderSimulator(root) {
       </div>`;
     wire();
   };
-
-  const advance = (to) => { state.step = to; trackEvent('simulator_step', { step: to }); render(); };
+/** @param {string} to */
+  const advance = (to) => {
+    state.step = to;
+    trackEvent('simulator_step', { step: to });
+    render();
+  };
 
   const wire = () => {
-    root.querySelector('#show-id')?.addEventListener('click', () => advance('ink'));
-    root.querySelector('#apply-ink')?.addEventListener('click', () => advance('evm'));
+    root
+      .querySelector('#show-id')
+      ?.addEventListener('click', () => advance('ink'));
+    root
+      .querySelector('#apply-ink')
+      ?.addEventListener('click', () => advance('evm'));
     root.querySelectorAll('.evm-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
+        // @ts-ignore
         state.choice = btn.dataset.id;
-        trackEvent('simulator_vote', { choice: state.choice === 'none' ? 'NOTA' : 'candidate' });
+        trackEvent('simulator_vote', {
+          choice: state.choice === 'none' ? 'NOTA' : 'candidate',
+        });
         advance('vvpat');
       });
     });
-    root.querySelector('#confirm-vvpat')?.addEventListener('click', () => advance('done'));
-    root.querySelector('#mismatch-vvpat')?.addEventListener('click', () => advance('mismatch'));
+    root
+      .querySelector('#confirm-vvpat')
+      ?.addEventListener('click', () => advance('done'));
+    root
+      .querySelector('#mismatch-vvpat')
+      ?.addEventListener('click', () => advance('mismatch'));
     root.querySelector('#reset')?.addEventListener('click', () => {
       state.step = 'id';
       state.choice = null;

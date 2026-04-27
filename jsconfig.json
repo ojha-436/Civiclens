@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "checkJs": true,
+    "strict": true
+  },
+  "include": ["public/**/*.js", "functions/**/*.js", "**/*.d.ts"]
+}

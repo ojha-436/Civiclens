@@ -20,21 +20,28 @@ const APP_SHELL = [
   '/modules/analytics.js',
   '/data/journey.json',
   '/data/security.json',
-  '/data/quiz.json'
+  '/data/quiz.json',
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL))
+    caches
+      .open(CACHE_NAME)
+      .then((cache) => cache.addAll(APP_SHELL))
       .then(() => self.skipWaiting())
   );
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
-    ).then(() => self.clients.claim())
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(
+          keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))
+        )
+      )
+      .then(() => self.clients.claim())
   );
 });
 
@@ -43,7 +50,10 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
 
   // Never cache the assistant endpoint — always live
-  if (url.pathname.startsWith('/ask') || url.hostname.includes('cloudfunctions.net')) {
+  if (
+    url.pathname.startsWith('/ask') ||
+    url.hostname.includes('cloudfunctions.net')
+  ) {
     return;
   }
 
@@ -52,10 +62,12 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       caches.open(CACHE_NAME).then(async (cache) => {
         const cached = await cache.match(request);
-        const networkPromise = fetch(request).then((resp) => {
-          if (resp.ok) cache.put(request, resp.clone());
-          return resp;
-        }).catch(() => cached);
+        const networkPromise = fetch(request)
+          .then((resp) => {
+            if (resp.ok) cache.put(request, resp.clone());
+            return resp;
+          })
+          .catch(() => cached);
         return cached || networkPromise;
       })
     );
@@ -64,12 +76,18 @@ self.addEventListener('fetch', (event) => {
 
   // App shell: cache-first
   event.respondWith(
-    caches.match(request).then((cached) => cached || fetch(request).then((resp) => {
-      if (resp.ok && request.method === 'GET') {
-        const respClone = resp.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(request, respClone));
-      }
-      return resp;
-    }))
+    caches.match(request).then(
+      (cached) =>
+        cached ||
+        fetch(request).then((resp) => {
+          if (resp.ok && request.method === 'GET') {
+            const respClone = resp.clone();
+            caches
+              .open(CACHE_NAME)
+              .then((cache) => cache.put(request, respClone));
+          }
+          return resp;
+        })
+    )
   );
 });

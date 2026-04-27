@@ -33,5 +33,10 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/YOUR_USERNAME/civiclens-india"
+  },
+  "devDependencies": {
+    "eslint": "^10.2.1",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.8.3"
   }
 }

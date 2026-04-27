@@ -1,3 +1,4 @@
+// @ts-check
 /**
  * @module analytics
  * @description Google Analytics 4 integration for CivicLens India.
@@ -24,12 +25,14 @@ export function initAnalytics() {
   document.head.appendChild(s);
 
   window.dataLayer = window.dataLayer || [];
-  window.gtag = function () { window.dataLayer.push(arguments); };
+  window.gtag = function () {
+    window.dataLayer.push(arguments);
+  };
   window.gtag('js', new Date());
   window.gtag('config', MEASUREMENT_ID, {
     anonymize_ip: true,
     send_page_view: true,
-    cookie_flags: 'SameSite=Strict;Secure'
+    cookie_flags: 'SameSite=Strict;Secure',
   });
   enabled = true;
 }
@@ -43,5 +46,7 @@ export function trackEvent(name, params = {}) {
   if (!enabled || typeof window.gtag !== 'function') return;
   try {
     window.gtag('event', name, params);
-  } catch { /* fail silently — analytics must never break UX */ }
+  } catch {
+    /* fail silently — analytics must never break UX */
+  }
 }
