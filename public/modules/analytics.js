@@ -9,7 +9,7 @@
  * If unset, all functions are no-ops — zero network traffic.
  */
 
-const MEASUREMENT_ID = ''; // e.g., 'G-ABCDE12345'
+const MEASUREMENT_ID = 'G-41MRDPJ8JR'; // e.g., 'G-ABCDE12345'
 
 let enabled = false;
 
