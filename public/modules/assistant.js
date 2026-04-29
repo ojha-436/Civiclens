@@ -1,11 +1,4 @@
 // @ts-check
-/**
- * @module assistant
- * @description India election FAQ assistant.
- *   - Offline-first: local FAQ matches instantly, no network.
- *   - Optional fallback to Gemini 1.5 Flash via GCP Cloud Function.
- *   - Rate-limited, XSS-safe, prompt-injection-aware.
- */
 import {
   escapeHTML,
   validateQuestion,
@@ -13,14 +6,8 @@ import {
   safeFetchJSON,
 } from './security-utils.js';
 import { trackEvent } from './analytics.js';
+import { APP_CONFIG } from './config.js';
 
-/**
- * @typedef {Object} FAQEntry
- * @property {string[]} q   Trigger keywords (lowercase)
- * @property {string} a     Answer
- */
-
-/** @type {FAQEntry[]} */
 const FAQ = [
   {
     q: ['register', 'registration', 'enroll', 'form 6'],
@@ -84,65 +71,57 @@ const FAQ = [
   },
 ];
 
-/** Cloud Function endpoint for Gemini fallback. Empty = offline-only. */
-const GEMINI_ENDPOINT = '/ask'; // Firebase rewrite to asia-south1/askGemini
-
-/**
- * Match a user question against the FAQ knowledge base.
- * @param {string} question
- * @returns {FAQEntry | undefined}
- */
 function findFAQ(question) {
   const lower = question.toLowerCase();
   return FAQ.find((item) => item.q.some((kw) => lower.includes(kw)));
 }
 
-/**
- * Render the assistant UI into `root`.
- * @param {HTMLElement} root
- */
-export function renderAssistant(root) {
-  if (!root) return;
+export class ElectionAssistant extends HTMLElement {
+  connectedCallback() {
+    this.render();
+  }
 
-  root.innerHTML = `
-    <div class="mb-4">
-      <label for="asst-input" class="block text-sm font-semibold text-civic-deep mb-2">Your question:</label>
-      <div class="flex gap-2">
-        <input id="asst-input" type="text" maxlength="500"
-               class="flex-1 border-2 border-gray-300 rounded px-3 py-2 focus:border-civic-deep focus:outline-none"
-               placeholder="e.g. How do I register using Form 6?"
-               aria-label="Ask a question about Indian elections" />
-        <button id="asst-send" class="bg-civic-deep text-white px-4 py-2 rounded font-semibold hover:bg-civic-accent">Ask</button>
+  render() {
+    this.innerHTML = `
+      <div class="mb-4">
+        <label for="asst-input" class="block text-sm font-semibold text-civic-deep mb-2">Your question:</label>
+        <div class="flex gap-2">
+          <input id="asst-input" type="text" maxlength="${APP_CONFIG.MAX_QUESTION_LENGTH}"
+                 class="asst-input flex-1 border-2 border-gray-300 rounded px-3 py-2 focus:border-civic-deep focus:outline-none"
+                 placeholder="e.g. How do I register using Form 6?"
+                 aria-label="Ask a question about Indian elections" />
+          <button class="asst-send bg-civic-deep text-white px-4 py-2 rounded font-semibold hover:bg-civic-accent">Ask</button>
+        </div>
       </div>
-    </div>
-    <div class="flex flex-wrap gap-2 mb-4">
-      ${[
-        'How do I register?',
-        'What is VVPAT?',
-        'Are EVMs secure?',
-        'What is NOTA?',
-        'What is the MCC?',
-        'How do I find my booth?',
-      ]
-        .map(
-          (s) =>
-            `<button class="suggest text-xs bg-civic-deep/10 text-civic-deep px-3 py-1 rounded-full hover:bg-civic-deep hover:text-white">${escapeHTML(s)}</button>`
-        )
-        .join('')}
-    </div>
-    <div id="asst-output" class="min-h-[100px] bg-gray-50 rounded p-4 text-sm text-gray-800" aria-live="polite">
-      <p class="text-gray-500 italic">Answers appear here. Always verify with the Election Commission of India (eci.gov.in) or call the Voter Helpline on 1950 before acting.</p>
-    </div>
-  `;
+      <div class="flex flex-wrap gap-2 mb-4">
+        ${[
+          'How do I register?',
+          'What is VVPAT?',
+          'Are EVMs secure?',
+          'What is NOTA?',
+          'What is the MCC?',
+          'How do I find my booth?',
+        ]
+          .map(
+            (s) =>
+              `<button class="suggest text-xs bg-civic-deep/10 text-civic-deep px-3 py-1 rounded-full hover:bg-civic-deep hover:text-white">${escapeHTML(s)}</button>`
+          )
+          .join('')}
+      </div>
+      <div class="asst-output min-h-[100px] bg-gray-50 rounded p-4 text-sm text-gray-800" aria-live="polite">
+        <p class="text-gray-500 italic">Answers appear here. Always verify with the Election Commission of India (eci.gov.in) or call the Voter Helpline on 1950 before acting.</p>
+      </div>
+    `;
+    this.wire();
+  }
 
-  const input = /** @type {HTMLInputElement} */ (
-    root.querySelector('#asst-input')
-  );
-  const out = /** @type {HTMLElement} */ (root.querySelector('#asst-output'));
-/** @param {string} raw */
-  const ask = async (raw) => {
+  async ask(raw) {
+    const input = this.querySelector('.asst-input');
+    const out = this.querySelector('.asst-output');
+    if (!input || !out) return;
+
     const validation = validateQuestion(raw);
-    if (!validation.valid) {// @ts-ignore
+    if (!validation.valid) {
       out.innerHTML = `<p class="text-amber-700">⚠️ ${escapeHTML(validation.reason)}</p>`;
       return;
     }
@@ -152,11 +131,12 @@ export function renderAssistant(root) {
       return;
     }
 
-    const question = validation.value;if (!question) return '';
+    const question = validation.value;
+    if (!question) return;
+
     trackEvent('assistant_query', { length: question.length });
     out.innerHTML = `<div class="animate-pulse text-gray-500">Thinking…</div>`;
 
-    // 1. Try local FAQ first (instant, no network)// @ts-ignore
     const hit = findFAQ(question);
     if (hit) {
       out.innerHTML = `
@@ -168,14 +148,13 @@ export function renderAssistant(root) {
       return;
     }
 
-    // 2. Fallback to Gemini
-    if (GEMINI_ENDPOINT) {
+    if (APP_CONFIG.GEMINI_ENDPOINT) {
       try {
-        const data = await safeFetchJSON(GEMINI_ENDPOINT, {
+        const data = await safeFetchJSON(APP_CONFIG.GEMINI_ENDPOINT, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ question }),
-          timeoutMs: 15000,
+          timeoutMs: APP_CONFIG.GEMINI_TIMEOUT_MS,
         });
         out.innerHTML = `
           <p><strong>Answer:</strong> ${escapeHTML(data.answer || '')}</p>
@@ -196,19 +175,39 @@ export function renderAssistant(root) {
           <a class="text-civic-accent underline" href="https://eci.gov.in">eci.gov.in</a> · Helpline: 1950</p>`;
       trackEvent('assistant_answer', { source: 'unknown' });
     }
-  };
-  const sendBtn = root.querySelector('#asst-send');
-  
-  if (!sendBtn) return;
-  
-  sendBtn.addEventListener('click', () => ask(input.value));
-  input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') ask(input.value);
-  });
-  root.querySelectorAll('.suggest').forEach((b) => {
-    b.addEventListener('click', () => {
-      input.value = b.textContent;
-      ask(b.textContent);
+  }
+
+  wire() {
+    const input = this.querySelector('.asst-input');
+    const sendBtn = this.querySelector('.asst-send');
+
+    if (sendBtn && input) {
+      // @ts-ignore
+      sendBtn.addEventListener('click', () => this.ask(input.value));
+      input.addEventListener('keydown', (e) => {
+        // @ts-ignore
+        if (e.key === 'Enter') this.ask(input.value);
+      });
+    }
+
+    this.querySelectorAll('.suggest').forEach((b) => {
+      b.addEventListener('click', () => {
+        if (input) {
+          // @ts-ignore
+          input.value = b.textContent;
+        }
+        // @ts-ignore
+        this.ask(b.textContent);
+      });
     });
-  });
+  }
+}
+
+customElements.define('election-assistant', ElectionAssistant);
+
+// Backward compatibility for app.js
+export function renderAssistant(root) {
+  if (root && root.tagName.toLowerCase() !== 'election-assistant') {
+    console.warn('Using legacy renderAssistant method without <election-assistant>');
+  }
 }

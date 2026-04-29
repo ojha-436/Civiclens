@@ -33,3 +33,14 @@ html { scroll-behavior: smooth; }
   button, nav, #assistant { display: none !important; }
   body { background: white; }
 }
+
+/* Quiz Option State Styles (Decoupled from JS) */
+.quiz-opt[data-state="correct"] {
+  background-color: #dcfce7; /* Tailwind bg-green-100 */
+  border-color: #16a34a;     /* Tailwind border-green-600 */
+}
+
+.quiz-opt[data-state="incorrect"] {
+  background-color: #fee2e2; /* Tailwind bg-red-100 */
+  border-color: #dc2626;     /* Tailwind border-red-600 */
+}

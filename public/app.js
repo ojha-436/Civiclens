@@ -4,11 +4,11 @@
  * @description Bootstraps the app: loads ECI content, renders feature modules,
  *   registers service worker, initialises analytics, wires navigation.
  */
-import { renderJourney } from './modules/journey.js';
-import { renderSimulator } from './modules/simulator.js';
-import { renderSecurity } from './modules/security.js';
-import { renderQuiz } from './modules/quiz.js';
-import { renderAssistant } from './modules/assistant.js';
+import './modules/journey.js';
+import './modules/simulator.js';
+import './modules/security.js';
+import './modules/quiz.js';
+import './modules/assistant.js';
 import { safeFetchJSON } from './modules/security-utils.js';
 import { initAnalytics, trackEvent } from './modules/analytics.js';
 import './modules/countdown.js';
@@ -43,12 +43,13 @@ function registerServiceWorker() {
 
 /**
  * Toggle the mobile navigation menu.
- * @param {HTMLButtonElement} btn
+ * @param {HTMLElement | null} btn
  */
 function wireMobileMenu(btn) {
-  btn?.addEventListener('click', () => {
+  if (!btn) return;
+  btn.addEventListener('click', () => {
     const nav = document.querySelector('nav');
-    // @ts-ignore
+    if (!nav) return;
     const open = nav.classList.toggle('hidden') === false;
     [
       'flex',
@@ -60,7 +61,6 @@ function wireMobileMenu(btn) {
       'p-4',
       'shadow-lg',
       'rounded',
-    // @ts-ignore
     ].forEach((c) => nav.classList.toggle(c, open));
     btn.setAttribute('aria-expanded', String(open));
   });
@@ -91,26 +91,31 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const { journey, security, quiz } = await loadContent();
 
-    renderJourney(
-      // @ts-ignore
-      document.getElementById('journey-container'),
-      document.getElementById('journey-detail'),
-      journey
-    );
-    // @ts-ignore
-    renderSimulator(document.getElementById('ballot-simulator'));
-    // @ts-ignore
-    renderSecurity(document.getElementById('security-grid'), security);
-    // @ts-ignore
-    renderQuiz(document.getElementById('quiz-container'), quiz);
-    // @ts-ignore
-    renderAssistant(document.getElementById('assistant-container'));
+    const journeyEl = document.getElementById('journey-container');
+    if (journeyEl && 'data' in journeyEl) {
+      // @ts-expect-error - Custom element property assignment
+      journeyEl.data = journey;
+    }
 
-    // @ts-ignore
+    const securityEl = document.getElementById('security-grid');
+    if (securityEl && 'data' in securityEl) {
+      // @ts-expect-error - Custom element property assignment
+      securityEl.data = security;
+    }
+
+    const quizEl = document.getElementById('quiz-container');
+    if (quizEl && 'data' in quizEl) {
+      // @ts-expect-error - Custom element property assignment
+      quizEl.data = quiz;
+    }
+
     wireMobileMenu(document.getElementById('menu-toggle'));
     trackEvent('app_loaded', { modules: 5 });
   } catch (err) {
-    // @ts-ignore
-    showFatalError(err);
+    if (err instanceof Error) {
+      showFatalError(err);
+    } else {
+      console.error(err);
+    }
   }
 });

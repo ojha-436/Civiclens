@@ -113,7 +113,7 @@
     <section id="journey" class="py-12" aria-labelledby="journey-heading">
       <h2 id="journey-heading" class="text-3xl font-serif font-bold text-civic-deep mb-2">The Voter's Journey</h2>
       <p class="text-gray-700 mb-6">Click any stage to see what happens — and why it matters.</p>
-      <div id="journey-container" class="grid grid-cols-1 md:grid-cols-5 gap-3"></div>
+      <voter-journey id="journey-container"></voter-journey>
       <div id="journey-detail" class="mt-6 bg-white border-l-4 border-civic-accent p-6 rounded shadow-sm hidden" role="region" aria-live="polite"></div>
       <election-countdown></election-countdown>
     </section>
@@ -122,28 +122,28 @@
     <section id="simulator" class="py-12" aria-labelledby="sim-heading">
       <h2 id="sim-heading" class="text-3xl font-serif font-bold text-civic-deep mb-2">EVM + VVPAT Simulator</h2>
       <p class="text-gray-700 mb-6">Walk through the four steps of voting at an Indian polling booth — ID check, indelible ink, EVM button press, VVPAT verification.</p>
-      <div id="ballot-simulator" class="bg-white border border-gray-200 rounded-lg shadow-sm p-6"></div>
+      <ballot-simulator id="ballot-simulator"></ballot-simulator>
     </section>
 
     <!-- SECURITY -->
     <section id="security" class="py-12" aria-labelledby="sec-heading">
       <h2 id="sec-heading" class="text-3xl font-serif font-bold text-civic-deep mb-2">How EVMs and VVPATs Stay Secure</h2>
       <p class="text-gray-700 mb-6">Every safeguard, explained in plain language.</p>
-      <div id="security-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+      <security-grid id="security-grid"></security-grid>
     </section>
 
     <!-- QUIZ -->
     <section id="quiz" class="py-12" aria-labelledby="quiz-heading">
       <h2 id="quiz-heading" class="text-3xl font-serif font-bold text-civic-deep mb-2">Test Your Knowledge</h2>
       <p class="text-gray-700 mb-6">Seven questions. Instant feedback. Share your score.</p>
-      <div id="quiz-container" class="bg-white border border-gray-200 rounded-lg shadow-sm p-6"></div>
+      <civic-quiz id="quiz-container"></civic-quiz>
     </section>
 
     <!-- ASSISTANT -->
     <section id="assistant" class="py-12" aria-labelledby="asst-heading">
       <h2 id="asst-heading" class="text-3xl font-serif font-bold text-civic-deep mb-2">Ask the Assistant</h2>
       <p class="text-gray-700 mb-6">Ask anything about the Indian election process. Answers are based on Election Commission of India sources.</p>
-      <div id="assistant-container" class="bg-white border border-gray-200 rounded-lg shadow-sm p-6"></div>
+      <election-assistant id="assistant-container"></election-assistant>
     </section>
 
   </main>
