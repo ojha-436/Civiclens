@@ -63,14 +63,14 @@ function validateQuestion(input) {
   }
   return { valid: true, value: trimmed };
 }
-const functions = require('firebase-functions');
+const { onRequest } = require('firebase-functions/v2/https');
 /**
  * Cloud Function to handle Gemini AI requests.
  * Incorporates prompt validation, rate limiting, and secure API communication.
  * @param {Object} req - The Express HTTP request object.
  * @param {Object} res - The Express HTTP response object.
  */
-exports.askGemini = functions.https.onRequest(async (req, res) => {
+exports.askGemini = onRequest({ region: 'asia-south1' }, async (req, res) => {
   // CORS — allowlist Firebase Hosting domain
   const allowedOrigin = process.env.ALLOWED_ORIGIN || '*';
   res.set('Access-Control-Allow-Origin', allowedOrigin);
@@ -99,7 +99,7 @@ exports.askGemini = functions.https.onRequest(async (req, res) => {
       return res.status(500).json({ answer: 'Assistant is not configured. Check eci.gov.in.' });
     }
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 12_000);
 
