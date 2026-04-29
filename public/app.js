@@ -91,21 +91,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const { journey, security, quiz } = await loadContent();
 
-    const journeyEl = document.getElementById('journey-container');
-    if (journeyEl && 'data' in journeyEl) {
-      // @ts-expect-error - Custom element property assignment
+    const journeyEl = /** @type {any} */ (document.getElementById('journey-container'));
+    if (journeyEl) {
       journeyEl.data = journey;
     }
 
-    const securityEl = document.getElementById('security-grid');
-    if (securityEl && 'data' in securityEl) {
-      // @ts-expect-error - Custom element property assignment
+    const securityEl = /** @type {any} */ (document.getElementById('security-grid'));
+    if (securityEl) {
       securityEl.data = security;
     }
 
-    const quizEl = document.getElementById('quiz-container');
-    if (quizEl && 'data' in quizEl) {
-      // @ts-expect-error - Custom element property assignment
+    const quizEl = /** @type {any} */ (document.getElementById('quiz-container'));
+    if (quizEl) {
       quizEl.data = quiz;
     }
 

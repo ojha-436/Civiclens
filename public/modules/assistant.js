@@ -178,26 +178,24 @@ export class ElectionAssistant extends HTMLElement {
   }
 
   wire() {
+    /** @type {HTMLInputElement | null} */
     const input = this.querySelector('.asst-input');
     const sendBtn = this.querySelector('.asst-send');
 
     if (sendBtn && input) {
-      // @ts-ignore
       sendBtn.addEventListener('click', () => this.ask(input.value));
       input.addEventListener('keydown', (e) => {
-        // @ts-ignore
         if (e.key === 'Enter') this.ask(input.value);
       });
     }
 
     this.querySelectorAll('.suggest').forEach((b) => {
       b.addEventListener('click', () => {
+        const text = b.textContent || '';
         if (input) {
-          // @ts-ignore
-          input.value = b.textContent;
+          input.value = text;
         }
-        // @ts-ignore
-        this.ask(b.textContent);
+        this.ask(text);
       });
     });
   }
