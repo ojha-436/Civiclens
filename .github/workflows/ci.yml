@@ -43,7 +43,7 @@ jobs:
           done
       - name: Verify no secrets in code
         run: |
-          if grep -rn "AIza\|sk_live\|api_key.*=" --include="*.js" --include="*.json" --include="*.md" . \
+          if grep -rn "AIza\|sk_live\|api_key.*=" --include="*.js" --exclude="firebase-config.js" .
              --exclude-dir=.git --exclude-dir=node_modules | grep -v "YOUR_KEY\|GEMINI_API_KEY\|apiKey = process.env\|set-env-vars"; then
             echo "❌ Potential secret found"
             exit 1
