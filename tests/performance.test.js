@@ -11,32 +11,10 @@
  * All tests run in-process (no network) so they complete in <100 ms total.
  */
 
-import { validateQuestion } from '../public/modules/security-utils.js';
+import { validateQuestion, RateLimiter } from '../public/modules/security-utils.js';
 
-// We need RateLimiter directly — import from source
-// The class is not exported, so we replicate its logic here to test the contract.
-// This mirrors the exact implementation in security-utils.js.
-class RateLimiter {
-  constructor(maxTokens = 5, refillMs = 30000) {
-    this.maxTokens = maxTokens;
-    this.refillMs = refillMs;
-    this.tokens = maxTokens;
-    this.lastRefill = Date.now();
-  }
-  tryConsume() {
-    const now = Date.now();
-    if (now - this.lastRefill > this.refillMs) {
-      this.tokens = this.maxTokens;
-      this.lastRefill = now;
-    }
-    if (this.tokens <= 0) return false;
-    this.tokens -= 1;
-    return true;
-  }
-  timeUntilNext() {
-    return Math.max(0, this.refillMs - (Date.now() - this.lastRefill));
-  }
-}
+// RateLimiter is now imported directly from the production module above.
+// This ensures any changes to the real implementation are caught by these tests.
 
 // ─── Burst exhaustion ──────────────────────────────────────────────────────
 

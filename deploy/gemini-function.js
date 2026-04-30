@@ -3,7 +3,7 @@
  * @description Handles free-form voter questions that don't match the local FAQ.
  *   Hardened with:
  *     - Input validation (length, type, prompt-injection patterns)
- *     - Per-IP rate limiting (in-memory; swap for Firestore for multi-instance)
+ *     - Per-IP rate limiting (Firestore-backed distributed counters)
  *     - CORS allowlist (Firebase Hosting domains only)
  *     - Response guardrails via system prompt
  *

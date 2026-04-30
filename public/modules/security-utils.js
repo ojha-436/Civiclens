@@ -56,13 +56,15 @@ export function validateQuestion(input) {
  * Simple token-bucket rate limiter to prevent abuse of the assistant.
  * Defaults: 5 requests per 30 seconds per browser session.
  */
-class RateLimiter {
+export class RateLimiter {
+  /** @param {number} maxTokens @param {number} refillMs */
   constructor(maxTokens = 5, refillMs = 30000) {
     this.maxTokens = maxTokens;
     this.refillMs = refillMs;
     this.tokens = maxTokens;
     this.lastRefill = Date.now();
   }
+  /** @returns {boolean} true if the request is allowed */
   tryConsume() {
     const now = Date.now();
     const elapsed = now - this.lastRefill;
@@ -74,6 +76,7 @@ class RateLimiter {
     this.tokens -= 1;
     return true;
   }
+  /** @returns {number} milliseconds until the next token is available */
   timeUntilNext() {
     return Math.max(0, this.refillMs - (Date.now() - this.lastRefill));
   }
