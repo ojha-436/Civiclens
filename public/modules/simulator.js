@@ -30,6 +30,7 @@ function renderProgress(step) {
 export class BallotSimulator extends HTMLElement {
   constructor() {
     super();
+    /** @type {{ step: string, choice: string | null }} */
     this.state = { step: 'id', choice: null };
   }
 
@@ -174,7 +175,7 @@ export class BallotSimulator extends HTMLElement {
     evmBtns.forEach((btn, i) => {
       btn.setAttribute('tabindex', i === 0 ? '0' : '-1');
       btn.addEventListener('click', () => {
-        this.state.choice = btn.dataset.id;
+        this.state.choice = /** @type {string} */ (btn.dataset.id);
         trackEvent('simulator_vote', {
           choice: this.state.choice === 'none' ? 'NOTA' : 'candidate',
         });

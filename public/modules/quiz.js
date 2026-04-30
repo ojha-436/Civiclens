@@ -104,7 +104,8 @@ export class CivicQuiz extends HTMLElement {
     const correct = selected === q.correct;
     if (correct) this.score += 1;
 
-    this.querySelectorAll('.quiz-opt').forEach((b, i) => {
+    const quizOpts = /** @type {NodeListOf<HTMLButtonElement>} */ (this.querySelectorAll('.quiz-opt'));
+    quizOpts.forEach((b, i) => {
       b.disabled = true;
       b.setAttribute('aria-checked', i === selected ? 'true' : 'false');
       if (i === q.correct) b.dataset.state = 'correct';

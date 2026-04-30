@@ -1,4 +1,5 @@
 // @ts-check
+/// <reference lib="es2017" />
 
 /**
  * Live countdown to the next Indian General Election (April 2029).
@@ -9,7 +10,8 @@ class ElectionCountdown extends HTMLElement {
   /** @type {number | null} */
   #timerId = null;
 
-  /** Target date: 1 April 2029 00:00:00 IST (UTC+5:30) */
+  // TODO: update once ECI officially announces the 2029 Lok Sabha election schedule.
+  /** Target date: 1 April 2029 00:00:00 IST (UTC+5:30) — estimated; see eci.gov.in for official date */
   static #TARGET = new Date('2029-04-01T00:00:00+05:30').getTime();
 
   connectedCallback() {

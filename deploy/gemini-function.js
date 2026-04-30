@@ -118,7 +118,8 @@ exports.askGemini = onRequest({ region: 'asia-south1', maxInstances: 10 }, async
     : '';
   const firstHop = rawForwarded.split(',')[0].trim();
   const IPV4 = /^(\d{1,3}\.){3}\d{1,3}$/;
-  const IPV6 = /^[0-9a-f:]{2,39}$/i;
+  // Stricter IPv6: requires at least one colon and only valid hex/colon chars (max 39).
+  const IPV6 = /^[0-9a-f]{0,4}(:[0-9a-f]{0,4}){2,7}$/i;
   const ip = (IPV4.test(firstHop) || IPV6.test(firstHop))
     ? firstHop
     : (req.ip || 'unknown');
@@ -188,7 +189,8 @@ exports._testHelpers = { validateQuestion, checkRateLimit, db, RATE_LIMIT, RATE_
  * so violations are visible in production without exposing stack traces to clients.
  */
 exports.cspReport = onRequest({ region: 'asia-south1', maxInstances: 5 }, async (req, res) => {
-  res.set('Access-Control-Allow-Origin', process.env.ALLOWED_ORIGIN || '*');
+  // CSP reports are sent by the browser as same-origin POST — no CORS headers needed.
+  // Explicitly omit Access-Control-Allow-Origin to avoid unnecessarily broadening access.
   if (req.method === 'OPTIONS') return res.status(204).send('');
   if (req.method !== 'POST') return res.status(405).send('');
 

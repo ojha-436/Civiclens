@@ -68,7 +68,7 @@ export function applyLang(lang) {
       const firstText = Array.from(el.childNodes).find(
         (n) => n.nodeType === Node.TEXT_NODE && n.textContent?.trim()
       );
-      if (firstText) firstText.textContent = text + ' ';
+      if (firstText) firstText.textContent = text;
     }
   });
 

@@ -41,19 +41,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 // Initialize App Check — protects Firestore write path from unauthorized clients.
-// To enforce in production: replace RECAPTCHA_SITE_KEY in config.js with a real key
-// and click Enforce in Firebase Console → App Check → Apps.
-const recaptchaKey = APP_CONFIG.FIREBASE.RECAPTCHA_SITE_KEY;
-if (recaptchaKey === '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI') {
-  console.warn(
-    '[CivicLens] App Check is using the Google test reCAPTCHA key. ' +
-    'Replace APP_CONFIG.FIREBASE.RECAPTCHA_SITE_KEY in config.js with a ' +
-    'production key to enforce App Check. See SECURITY.md for steps.'
-  );
-}
+// RECAPTCHA_SITE_KEY is a public site key (safe to commit); see config.js for details.
 try {
   initializeAppCheck(app, {
-    provider: new ReCaptchaV3Provider(recaptchaKey),
+    provider: new ReCaptchaV3Provider(APP_CONFIG.FIREBASE.RECAPTCHA_SITE_KEY),
     isTokenAutoRefreshEnabled: true,
   });
 } catch (e) {

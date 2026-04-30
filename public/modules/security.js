@@ -33,7 +33,8 @@ export class SecurityGrid extends HTMLElement {
       </div>
     `;
 
-    this.querySelectorAll('details.sec-details').forEach((d, i) => {
+    const detailsEls = /** @type {NodeListOf<HTMLDetailsElement>} */ (this.querySelectorAll('details.sec-details'));
+    detailsEls.forEach((d, i) => {
       d.addEventListener('toggle', () => {
         if (d.open) trackEvent('security_card_expanded', { card: this.items[i].title });
       });

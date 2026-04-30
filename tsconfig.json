@@ -1,24 +1,18 @@
 {
   "compilerOptions": {
-    // Type-check JS files via JSDoc — no .ts conversion needed
     "allowJs": true,
     "checkJs": true,
     "noEmit": true,
-
-    // Strict type checking — catches real bugs, not just syntax
     "strict": true,
     "noImplicitAny": false,
-
-    // Module settings: bundler resolution handles CDN URLs in globals.d.ts
     "module": "ESNext",
     "moduleResolution": "bundler",
     "target": "ES2020",
-
-    // Allow default imports from CommonJS modules
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-
-    // Use globals.d.ts for CDN + firebase/app ambient declarations
+    // Skip type-checking inside node_modules — prevents lib.dom vs lib.webworker conflicts
+    "skipLibCheck": true,
     "typeRoots": [],
     "types": []
   },
@@ -30,6 +24,8 @@
     "node_modules",
     "deploy/**",
     "tests/**",
-    "coverage/**"
+    "coverage/**",
+    // sw.js runs in ServiceWorker context (not window), exclude to avoid DOM conflicts
+    "public/sw.js"
   ]
 }

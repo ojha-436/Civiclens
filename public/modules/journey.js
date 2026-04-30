@@ -37,7 +37,8 @@ export class VoterJourney extends HTMLElement {
     `;
 
     const detail = this.querySelector('.journey-detail');
-    this.querySelectorAll('.journey-stage').forEach((btn) => {
+    const stageButtons = /** @type {NodeListOf<HTMLButtonElement>} */ (this.querySelectorAll('.journey-stage'));
+    stageButtons.forEach((btn) => {
       btn.addEventListener('click', () => {
         const idx = Number(btn.dataset.idx);
         const s = this.stages[idx];
