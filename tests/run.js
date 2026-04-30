@@ -51,6 +51,15 @@ globalThis.assert = {
     try { fn(); } catch { threw = true; }
     if (!threw) throw new Error(msg || 'Expected function to throw');
   },
+  async rejects(fn, pattern, msg) {
+    let threw = false;
+    let err;
+    try { await fn(); } catch (e) { threw = true; err = e; }
+    if (!threw) throw new Error(msg || 'Expected async function to reject');
+    if (pattern instanceof RegExp && !pattern.test(err?.message || '')) {
+      throw new Error(msg || `Expected error message to match ${pattern}, got: ${err?.message}`);
+    }
+  },
   match(str, regex, msg) {
     if (!regex.test(str)) throw new Error(msg || `Expected "${str}" to match ${regex}`);
   }
