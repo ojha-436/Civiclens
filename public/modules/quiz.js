@@ -69,9 +69,32 @@ export class CivicQuiz extends HTMLElement {
     `;
     this.answered = false;
 
-    this.querySelectorAll('.quiz-opt').forEach((btn) => {
+    const opts = /** @type {NodeListOf<HTMLButtonElement>} */ (this.querySelectorAll('.quiz-opt'));
+    // Roving tabindex: first option tabbable, rest -1
+    opts.forEach((btn, i) => {
+      btn.setAttribute('tabindex', i === 0 ? '0' : '-1');
       btn.addEventListener('click', () => this.handleAnswer(btn, q));
     });
+
+    // Arrow-key navigation per WAI-ARIA radiogroup pattern
+    const radiogroup = this.querySelector('[role="radiogroup"]');
+    if (radiogroup) {
+      radiogroup.addEventListener('keydown', (e) => {
+        const key = /** @type {KeyboardEvent} */ (e).key;
+        if (!['ArrowDown', 'ArrowUp', 'ArrowRight', 'ArrowLeft'].includes(key)) return;
+        e.preventDefault();
+        const current = /** @type {HTMLElement} */ (document.activeElement);
+        const items = [...opts];
+        const idx = items.indexOf(/** @type {HTMLButtonElement} */ (current));
+        if (idx === -1) return;
+        const next = (key === 'ArrowDown' || key === 'ArrowRight')
+          ? (idx + 1) % items.length
+          : (idx - 1 + items.length) % items.length;
+        items[idx].setAttribute('tabindex', '-1');
+        items[next].setAttribute('tabindex', '0');
+        items[next].focus();
+      });
+    }
   }
 
   handleAnswer(btn, q) {

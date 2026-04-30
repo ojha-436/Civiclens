@@ -170,7 +170,9 @@ export class BallotSimulator extends HTMLElement {
     const btnApplyInk = this.querySelector('.sim-btn-apply-ink');
     if (btnApplyInk) btnApplyInk.addEventListener('click', () => this.advance('evm'));
 
-    this.querySelectorAll('.evm-btn').forEach((btn) => {
+    const evmBtns = /** @type {NodeListOf<HTMLButtonElement>} */ (this.querySelectorAll('.evm-btn'));
+    evmBtns.forEach((btn, i) => {
+      btn.setAttribute('tabindex', i === 0 ? '0' : '-1');
       btn.addEventListener('click', () => {
         this.state.choice = btn.dataset.id;
         trackEvent('simulator_vote', {
@@ -179,6 +181,26 @@ export class BallotSimulator extends HTMLElement {
         this.advance('vvpat');
       });
     });
+
+    // Arrow-key navigation per WAI-ARIA radiogroup pattern for EVM
+    const evmGroup = this.querySelector('[role="radiogroup"]');
+    if (evmGroup) {
+      evmGroup.addEventListener('keydown', (e) => {
+        const key = /** @type {KeyboardEvent} */ (e).key;
+        if (!['ArrowDown', 'ArrowUp', 'ArrowRight', 'ArrowLeft'].includes(key)) return;
+        e.preventDefault();
+        const current = /** @type {HTMLElement} */ (document.activeElement);
+        const items = [...evmBtns];
+        const idx = items.indexOf(/** @type {HTMLButtonElement} */ (current));
+        if (idx === -1) return;
+        const next = (key === 'ArrowDown' || key === 'ArrowRight')
+          ? (idx + 1) % items.length
+          : (idx - 1 + items.length) % items.length;
+        items[idx].setAttribute('tabindex', '-1');
+        items[next].setAttribute('tabindex', '0');
+        items[next].focus();
+      });
+    }
 
     const btnConfirm = this.querySelector('.sim-btn-confirm-vvpat');
     if (btnConfirm) btnConfirm.addEventListener('click', () => this.advance('done'));

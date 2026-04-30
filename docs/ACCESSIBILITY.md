@@ -33,7 +33,7 @@ CivicLens is built accessibility-first because elections belong to everyone — 
 - Form inputs associated with `<label>` elements
 
 **1.4.3 Contrast (Minimum) (AA)**
-- Body text `#1a1a1a` on `#f5f1e8`: contrast ratio **15.3:1** ✅
+- Body text `#1a1a1a` on `#FFF8F0`: contrast ratio **14.7:1** ✅
 - Primary button white on `#0b3d91`: contrast ratio **9.8:1** ✅
 - Accent `#d72638` on white: contrast ratio **5.1:1** ✅
 - All text passes 4.5:1 minimum

@@ -67,3 +67,12 @@ test('has favicon declared', () => {
 test('has theme-color meta for mobile chrome', () => {
   assert.match(html, /<meta[^>]+name=["']theme-color["']/);
 });
+
+test('quiz results buttons have logical source order (Share then Try Again)', () => {
+  const quizJs = readFileSync(join(__dirname, '..', 'public', 'modules', 'quiz.js'), 'utf8');
+  const shareIdx = quizJs.indexOf('quiz-share-btn');
+  const retryIdx = quizJs.indexOf('quiz-retry-btn');
+  assert.ok(shareIdx !== -1, 'Share button missing in template');
+  assert.ok(retryIdx !== -1, 'Retry button missing in template');
+  assert.ok(shareIdx < retryIdx, 'Share button should precede Try Again in DOM/Tab order');
+});

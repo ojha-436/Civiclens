@@ -104,7 +104,7 @@ export class ElectionAssistant extends HTMLElement {
         ]
           .map(
             (s) =>
-              `<button class="suggest text-xs bg-civic-deep/10 text-civic-deep px-3 py-1 rounded-full hover:bg-civic-deep hover:text-white">${escapeHTML(s)}</button>`
+              `<button class="suggest text-xs bg-civic-deep/10 text-civic-deep px-3 py-1 rounded-full hover:bg-civic-deep hover:text-white" aria-label="Ask: ${escapeHTML(s)}">${escapeHTML(s)}</button>`
           )
           .join('')}
       </div>
