@@ -30,7 +30,7 @@
         "headers": [
           {
             "key": "Content-Security-Policy",
-           "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://www.googletagmanager.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.cloudfunctions.net https://*.run.app https://www.google-analytics.com https://firestore.googleapis.com https://firebaseinstallations.googleapis.com https://firebase.googleapis.com https://www.gstatic.com https://cdn.tailwindcss.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests"
+           "value": "default-src 'self'; script-src 'self' https://cdn.tailwindcss.com https://www.googletagmanager.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.cloudfunctions.net https://*.run.app https://www.google-analytics.com https://firestore.googleapis.com https://firebaseinstallations.googleapis.com https://firebase.googleapis.com https://www.gstatic.com https://cdn.tailwindcss.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests"
           }, 
            {
             "key": "Strict-Transport-Security",
@@ -71,5 +71,8 @@
   },
   "functions": {
     "source": "deploy"
+  },
+  "firestore": {
+    "rules": "firestore.rules"
   }
 }

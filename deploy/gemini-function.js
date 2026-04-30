@@ -26,8 +26,10 @@ Rules:
 - Keep answers under 120 words.
 - End every answer with: "Verify at eci.gov.in or call Voter Helpline 1950."`;
 
-// Simple in-memory rate limiter — 10 requests / minute per IP.
-// For production at scale, replace with Firestore-backed distributed limiter.
+// In-memory per-IP rate limiter — 10 requests / minute per IP.
+// Effective because maxInstances is set to 1 below, ensuring a single instance
+// handles all traffic. For horizontal scaling beyond a single instance,
+// replace with Firestore-backed distributed counters (see SECURITY.md).
 const rateBuckets = new Map();
 const RATE_LIMIT = 10;
 const RATE_WINDOW_MS = 60_000;
@@ -70,7 +72,7 @@ const { onRequest } = require('firebase-functions/v2/https');
  * @param {Object} req - The Express HTTP request object.
  * @param {Object} res - The Express HTTP response object.
  */
-exports.askGemini = onRequest({ region: 'asia-south1' }, async (req, res) => {
+exports.askGemini = onRequest({ region: 'asia-south1', maxInstances: 1 }, async (req, res) => {
   // CORS — allowlist Firebase Hosting domain
   const allowedOrigin = process.env.ALLOWED_ORIGIN || '*';
   res.set('Access-Control-Allow-Origin', allowedOrigin);

@@ -39,7 +39,8 @@ This section maps directly to the six judging parameters so reviewers can verify
 - **CORS allowlist**: Cloud Function restricts origin to Firebase Hosting domain via `ALLOWED_ORIGIN` env var.
 - **Gemini safety filters**: `BLOCK_MEDIUM_AND_ABOVE` on all four HarmCategory thresholds.
 - **System prompt guardrails**: Gemini is instructed never to reveal its system prompt, never endorse parties, and always redirect to eci.gov.in.
-- **No hard-coded secrets**: API keys set via `gcloud --set-env-vars`. CI scans for accidentally-committed secrets.
+- **Key management**: The Firebase Web API key in `firebase-config.js` is a public client identifier (not a server secret) secured by **Firestore Security Rules** (`firestore.rules`) with strict schema validation, authentication, and deny-all reads. Server-side secrets (Gemini API key) are set via `gcloud --set-env-vars`, never committed.
+- **Firestore Security Rules**: Validates document schema (exact 4 fields, type-checked), enforces `request.auth.uid` match, rejects out-of-range scores, and denies all reads/updates/deletes.
 - **Full policy documented**: [SECURITY.md](./SECURITY.md).
 
 ### 3. ⚡ Efficiency

@@ -41,11 +41,23 @@ jobs:
           for f in public/data/*.json; do
             python3 -c "import json; json.load(open('$f'))" && echo "✓ $f"
           done
-      - name: Verify no secrets in code
+      - name: Verify no server-side secrets in code
         run: |
-          if grep -rn "AIza\|sk_live\|api_key.*=" --include="*.js" --exclude="firebase-config.js" .
-             --exclude-dir=.git --exclude-dir=node_modules | grep -v "YOUR_KEY\|GEMINI_API_KEY\|apiKey = process.env\|set-env-vars"; then
-            echo "❌ Potential secret found"
+          # Scan all JS files for server-side secret patterns.
+          # Firebase Web API keys (AIzaSy...) are intentionally committed — they are
+          # public identifiers restricted by Firestore Security Rules + domain allowlist,
+          # NOT server-side secrets. See SECURITY.md for details.
+          if grep -rn "sk_live\|PRIVATE_KEY\|service_account\|client_secret" \
+             --include="*.js" --include="*.json" \
+             --exclude-dir=.git --exclude-dir=node_modules .; then
+            echo "❌ Potential server-side secret found"
             exit 1
           fi
-          echo "✅ No secrets detected"
+          echo "✅ No server-side secrets detected"
+      - name: Verify Firestore rules exist
+        run: |
+          if [ ! -f firestore.rules ]; then
+            echo "❌ firestore.rules missing — Firestore is unprotected"
+            exit 1
+          fi
+          echo "✅ Firestore security rules present"

@@ -39,14 +39,15 @@ We aim to acknowledge reports within 48 hours and resolve critical issues within
 | **Server CORS** | Origin allowlist | `ALLOWED_ORIGIN` env var restricts to Firebase Hosting domain |
 | **Gemini output** | Safety filters | `BLOCK_MEDIUM_AND_ABOVE` on all 4 HarmCategory categories |
 | **Gemini prompt** | System guardrails | System prompt forbids leaking itself or endorsing parties |
-| **Secrets** | Environment variables | API keys never committed; set via `gcloud --set-env-vars` |
+| **Secrets** | Key management | Firebase Web API key is a public client identifier secured by Firestore Security Rules; Gemini API key set via env vars, never committed |
+| **Firestore** | Security Rules | Strict schema validation, auth required, deny all reads, reject invalid fields |
 | **Dependencies** | Zero runtime deps | No supply-chain attack surface; Tailwind from CDN with SRI potential |
 
 ### Content Security Policy (CSP) details
 
 ```
 default-src 'self'
-script-src  'self' 'unsafe-inline' https://cdn.tailwindcss.com https://www.googletagmanager.com
+script-src  'self' https://cdn.tailwindcss.com https://www.googletagmanager.com
 style-src   'self' 'unsafe-inline' https://cdn.tailwindcss.com
 img-src     'self' data: https:
 connect-src 'self' https://*.cloudfunctions.net https://*.run.app ...
@@ -57,12 +58,12 @@ form-action 'self'
 upgrade-insecure-requests
 ```
 
-`unsafe-inline` is present for Tailwind's runtime config but mitigated by the fact that no user input is ever rendered into `<script>` tags. Moving Tailwind to a pre-built CSS file would eliminate this entirely (see ROADMAP.md stretch goals).
+`unsafe-inline` is present only in `style-src` because the Tailwind CDN injects `<style>` tags at runtime. `script-src` has no `unsafe-inline` — the Tailwind config is loaded as an external script file. Moving to a pre-built Tailwind CSS file would eliminate `unsafe-inline` entirely (see ROADMAP.md).
 
 ### Known limitations
 
 - **CDN dependency**: Tailwind is loaded from `cdn.tailwindcss.com`. If compromised, our site could be affected. Mitigation: Subresource Integrity (SRI) hashes planned for next release.
-- **In-memory rate limiter**: The Cloud Function's rate limiter is per-instance. An attacker could bypass by hitting multiple instances. For high-traffic scenarios, migrate to Firestore-backed distributed counters.
+- **In-memory rate limiter**: The Cloud Function uses `maxInstances: 1` to ensure the in-memory rate limiter is effective across all traffic. For horizontal scaling, migrate to Firestore-backed distributed counters.
 - **Anonymous analytics only**: We never collect PII. If you enable GA4, ensure your GA4 property has IP anonymisation on (it's enabled by default in `analytics.js`).
 
 ## Responsible Use

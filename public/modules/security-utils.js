@@ -101,8 +101,8 @@ export async function safeFetchJSON(url, opts = {}) {
     const res = await fetch(url, { ...opts, signal: controller.signal });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const ct = res.headers.get('content-type') || '';
-    if (!ct.includes('application/json') && !ct.includes('text/plain')) {
-      throw new Error('Unexpected content-type');
+    if (!ct.includes('application/json')) {
+      throw new Error(`Unexpected content-type: ${ct}`);
     }
     return await res.json();
   } finally {
