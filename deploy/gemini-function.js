@@ -141,3 +141,6 @@ exports.askGemini = onRequest({ region: 'asia-south1', maxInstances: 1 }, async 
     });
   }
 });
+
+// Export internals for testing (not used by Cloud Functions runtime)
+exports._testHelpers = { validateQuestion, checkRateLimit, rateBuckets, RATE_LIMIT, RATE_WINDOW_MS };

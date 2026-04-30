@@ -4,20 +4,7 @@
 import { escapeHTML } from './security-utils.js';
 import { trackEvent } from './analytics.js';
 import { APP_CONFIG } from './config.js';
-
-/**
- * Map a numeric score to an achievement tier.
- * Pure function — exported for testability.
- * @param {number} score
- * @param {number} total
- * @returns {{ emoji: string, label: string, pct: number }}
- */
-export function scoreToTier(score, total) {
-  const pct = Math.round((score / total) * 100);
-  if (pct >= 80) return { emoji: '🏆', label: 'Civic Expert', pct };
-  if (pct >= 60) return { emoji: '📘', label: 'Informed Voter', pct };
-  return { emoji: '🌱', label: 'Keep learning!', pct };
-}
+import { scoreToTier } from './quiz-scoring.js';
 
 async function saveScoreToCloud(finalScore, tier) {
   try {

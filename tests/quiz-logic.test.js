@@ -1,6 +1,7 @@
 /**
  * Quiz logic tests.
- * Tests the pure scoring and tier-calculation functions.
+ * Tests the REAL production scoreToTier function from quiz-scoring.js.
+ * Also verifies quiz content accuracy against known facts.
  */
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -8,37 +9,50 @@ import { dirname, join } from 'node:path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-// Reproduce the pure scoring logic here for isolated testing
-function scoreToTier(score, total) {
-  const pct = (score / total) * 100;
-  if (pct >= 80) return { emoji: '🏆', label: 'Civic Expert' };
-  if (pct >= 60) return { emoji: '📘', label: 'Informed Voter' };
-  return { emoji: '🌱', label: 'Keep learning!' };
-}
+// Import the REAL production function — not a local copy
+import { scoreToTier } from '../public/modules/quiz-scoring.js';
+
+// Verify the imported function is the real one (returns pct)
+test('scoreToTier returns pct field (production signature)', () => {
+  const t = scoreToTier(5, 7);
+  assert.ok('pct' in t, 'Production scoreToTier must return pct field');
+  assert.equal(typeof t.pct, 'number');
+});
 
 test('100% scores earn Civic Expert tier', () => {
   const t = scoreToTier(7, 7);
   assert.equal(t.label, 'Civic Expert');
+  assert.equal(t.pct, 100);
 });
 
 test('80% scores earn Civic Expert tier (boundary)', () => {
   const t = scoreToTier(4, 5);
   assert.equal(t.label, 'Civic Expert');
+  assert.equal(t.pct, 80);
 });
 
 test('60% scores earn Informed Voter tier (boundary)', () => {
   const t = scoreToTier(3, 5);
   assert.equal(t.label, 'Informed Voter');
+  assert.equal(t.pct, 60);
 });
 
 test('sub-60% scores earn Keep learning tier', () => {
   const t = scoreToTier(2, 5);
   assert.equal(t.label, 'Keep learning!');
+  assert.equal(t.pct, 40);
 });
 
 test('0% scores earn Keep learning tier', () => {
   const t = scoreToTier(0, 5);
   assert.equal(t.label, 'Keep learning!');
+  assert.equal(t.pct, 0);
+});
+
+test('scoreToTier uses Math.round for pct', () => {
+  // 2/3 = 66.66... → should round to 67
+  const t = scoreToTier(2, 3);
+  assert.equal(t.pct, 67);
 });
 
 // Test real quiz answers for correctness against known facts

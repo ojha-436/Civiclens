@@ -22,6 +22,7 @@ const APP_SHELL = [
   '/modules/config.js',
   '/modules/countdown.js',
   '/modules/firebase-config.js',
+  '/modules/quiz-scoring.js',
   '/data/journey.json',
   '/data/security.json',
   '/data/quiz.json',

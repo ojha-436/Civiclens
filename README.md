@@ -63,14 +63,16 @@ This section maps directly to the six judging parameters so reviewers can verify
 
 **Validation of functionality.**
 
-- **46 automated tests passing** across 4 files:
+- **63 automated tests passing** across 5 files:
   - `data.test.js` (11 tests) — content integrity, source citations, MCC compliance
   - `security-utils.test.js` (12 tests) — XSS escaping, input validation, injection blocks
-  - `quiz-logic.test.js` (10 tests) — scoring tiers, fact-accuracy of answers
+  - `quiz-logic.test.js` (12 tests) — imports REAL production `scoreToTier` from `quiz-scoring.js`, verifies full return signature including `pct`, fact-accuracy of quiz answers
+  - `cloud-function.test.js` (15 tests) — server-side `validateQuestion` (10 cases including boundary, injection patterns), `checkRateLimit` (5 cases: allow, block, multi-IP isolation, window expiry)
   - `accessibility.test.js` (13 tests) — WCAG 2.1 structural conformance
-- **Zero-dependency test runner** — 70-line custom runner in `tests/run.js`, sub-second execution, transparent to AI auditors.
-- **Run with**: `npm test`
-- **CI integration** — GitHub Actions runs the full suite on every push, plus validates JSON integrity, scans for secrets, and enforces the 10 MB repo-size cap.
+- **Coverage reporting** — `npm run test:coverage` generates text + HTML coverage report via `c8`. `quiz-scoring.js` at 100% coverage.
+- **Production imports** — quiz tests import the real `scoreToTier` from source (not a local reproduction), catching regressions in return signature.
+- **Run with**: `npm test` (no coverage) or `npm run test:coverage` (with coverage)
+- **CI integration** — GitHub Actions runs the full suite on every push, validates JSON, scans for server secrets, verifies `firestore.rules` exists, and enforces the 10 MB repo-size cap.
 - **Fact-regression tests** — tests literally assert that "voting age is 18", "Form 6 is for new voters", "VVPAT means Voter Verifiable Paper Audit Trail", so content corrections cannot silently break accuracy.
 - **MCC-compliance test** — regex-scans all content for party/candidate/leader names that would violate ECI display guidelines.
 - **Full strategy documented**: [TESTING.md](./TESTING.md).

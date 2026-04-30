@@ -6,6 +6,7 @@
   "private": true,
   "scripts": {
     "test": "node tests/run.js",
+    "test:coverage": "npx c8 --reporter=text --reporter=html --include='public/modules/**' --include='deploy/**' node tests/run.js",
     "build:css": "npx tailwindcss@3 build -i src/input.css -o public/tailwind.css --minify -c tailwind.config.js",
     "serve": "npx --yes serve public",
     "lint": "node -e \"console.log('Zero-dep lint: use your editor\\'s ESLint/Prettier integration.')\"",
@@ -36,6 +37,7 @@
     "url": "https://github.com/ojha-436/Civiclens"
   },
   "devDependencies": {
+    "c8": "^11.0.0",
     "eslint": "^10.2.1",
     "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.8.3"
