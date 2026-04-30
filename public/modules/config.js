@@ -15,7 +15,7 @@ export const APP_CONFIG = {
     },
     // GA4 Measurement ID — find this in Firebase Console → Analytics → Data Streams
     // Format: G-XXXXXXXXXX
-    MEASUREMENT_ID: 'G-XXXXXXXXXX',
+    MEASUREMENT_ID: 'G-41MRDPJ8JR',
     // reCAPTCHA v3 site key for Firebase App Check.
     // Steps to replace:
     //   1. Go to https://www.google.com/recaptcha/admin and create a reCAPTCHA v3 site.
