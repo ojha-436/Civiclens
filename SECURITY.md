@@ -47,8 +47,8 @@ We aim to acknowledge reports within 48 hours and resolve critical issues within
 
 ```
 default-src 'self'
-script-src  'self' https://cdn.tailwindcss.com https://www.googletagmanager.com
-style-src   'self' 'unsafe-inline' https://cdn.tailwindcss.com
+script-src  'self' https://www.googletagmanager.com https://www.gstatic.com
+style-src   'self'
 img-src     'self' data: https:
 connect-src 'self' https://*.cloudfunctions.net https://*.run.app ...
 frame-ancestors 'none'
@@ -58,7 +58,7 @@ form-action 'self'
 upgrade-insecure-requests
 ```
 
-`unsafe-inline` is present only in `style-src` because the Tailwind CDN injects `<style>` tags at runtime. `script-src` has no `unsafe-inline` — the Tailwind config is loaded as an external script file. Moving to a pre-built Tailwind CSS file would eliminate `unsafe-inline` entirely (see ROADMAP.md).
+The CSP contains **zero `unsafe-inline` directives**. Tailwind CSS is pre-built and served from `'self'` as a static file. No CDN dependencies in the critical rendering path.
 
 ### Known limitations
 

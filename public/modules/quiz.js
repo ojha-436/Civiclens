@@ -1,13 +1,6 @@
 // @ts-check
-import {
-  auth,
-  db,
-  analytics,
-  logEvent,
-  signInAnonymously,
-  collection,
-  addDoc,
-} from './firebase-config.js';
+// Firebase SDK is lazy-loaded on quiz completion to save ~80-120KB on first paint.
+// Only users who finish the quiz trigger the download.
 import { escapeHTML } from './security-utils.js';
 import { trackEvent } from './analytics.js';
 import { APP_CONFIG } from './config.js';
@@ -28,6 +21,10 @@ export function scoreToTier(score, total) {
 
 async function saveScoreToCloud(finalScore, tier) {
   try {
+    // Lazy-load Firebase only when needed — dynamic import defers the ~80-120KB download
+    const {
+      auth, db, analytics, logEvent, signInAnonymously, collection, addDoc,
+    } = await import('./firebase-config.js');
     const userCredential = await signInAnonymously(auth);
     await addDoc(collection(db, APP_CONFIG.FIREBASE.COLLECTIONS.QUIZ_SCORES), {
       uid: userCredential.user.uid,
@@ -36,7 +33,6 @@ async function saveScoreToCloud(finalScore, tier) {
       timestamp: new Date(),
     });
     logEvent(analytics, 'quiz_completed', { score: finalScore, tier: tier });
-
   } catch (error) {
     console.error('Firebase Cloud integration error:', error);
   }

@@ -5,10 +5,11 @@
  *  - Data JSON: stale-while-revalidate (fast + fresh)
  *  - Assistant API: network-only (always live)
  */
-const CACHE_NAME = 'civiclens-v1';
+const CACHE_NAME = 'civiclens-v2';
 const APP_SHELL = [
   '/',
   '/index.html',
+  '/tailwind.css',
   '/styles.css',
   '/app.js',
   '/modules/journey.js',
@@ -18,6 +19,9 @@ const APP_SHELL = [
   '/modules/assistant.js',
   '/modules/security-utils.js',
   '/modules/analytics.js',
+  '/modules/config.js',
+  '/modules/countdown.js',
+  '/modules/firebase-config.js',
   '/data/journey.json',
   '/data/security.json',
   '/data/quiz.json',
@@ -54,6 +58,22 @@ self.addEventListener('fetch', (event) => {
     url.pathname.startsWith('/ask') ||
     url.hostname.includes('cloudfunctions.net')
   ) {
+    return;
+  }
+
+  // External Firebase SDK requests: network-first with cache fallback
+  if (url.hostname === 'www.gstatic.com') {
+    event.respondWith(
+      fetch(request)
+        .then((resp) => {
+          if (resp.ok) {
+            const clone = resp.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          }
+          return resp;
+        })
+        .catch(() => caches.match(request))
+    );
     return;
   }
 

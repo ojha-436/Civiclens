@@ -16,8 +16,7 @@
 
   <title>CivicLens India — Understand Your Election, Step by Step</title>
 
-  <!-- Performance: preconnect to CDN early -->
-  <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+  <!-- Performance: preconnect for analytics -->
   <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
 
   <!-- Prefetch data — fires in parallel with JS so content is ready on render -->
@@ -25,10 +24,8 @@
   <link rel="prefetch" href="./data/security.json" as="fetch" crossorigin />
   <link rel="prefetch" href="./data/quiz.json" as="fetch" crossorigin />
 
-  <!-- Tailwind via CDN (keeps repo tiny) -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="./tailwind-config.js"></script>
-
+  <!-- Pre-built Tailwind CSS (purged, minified, 15KB vs 300KB CDN runtime) -->
+  <link rel="stylesheet" href="./tailwind.css" />
   <link rel="stylesheet" href="./styles.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><text y='20' font-size='20'>🗳️</text></svg>" />
 
