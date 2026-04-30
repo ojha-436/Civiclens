@@ -15,6 +15,14 @@
  *     --entry-point=askGemini
  */
 
+const { onRequest } = require('firebase-functions/v2/https');
+const { initializeApp } = require('firebase-admin/app');
+const { getFirestore } = require('firebase-admin/firestore');
+
+// Initialize Admin SDK for Firestore-backed rate limiter
+initializeApp();
+const db = getFirestore();
+
 const SYSTEM_PROMPT = `You are CivicLens India, a non-partisan assistant that explains the Indian election process.
 Rules:
 - Answer ONLY questions about the Indian election process, the Election Commission of India (ECI), voter registration, EVMs, VVPAT, counting, or related procedures.
@@ -26,29 +34,49 @@ Rules:
 - Keep answers under 120 words.
 - End every answer with: "Verify at eci.gov.in or call Voter Helpline 1950."`;
 
-// In-memory per-IP rate limiter — 10 requests / minute per IP.
-// Effective because maxInstances is set to 1 below, ensuring a single instance
-// handles all traffic. For horizontal scaling beyond a single instance,
-// replace with Firestore-backed distributed counters (see SECURITY.md).
-const rateBuckets = new Map();
+// Distributed per-IP rate limiter — 10 requests / minute per IP.
+// Uses Firestore for horizontal scaling support.
 const RATE_LIMIT = 10;
 const RATE_WINDOW_MS = 60_000;
 
 /**
  * @param {string} ip
- * @returns {boolean} true if allowed, false if rate-limited
+ * @returns {Promise<boolean>} true if allowed, false if rate-limited
  */
-function checkRateLimit(ip) {
-  const now = Date.now();
-  const bucket = rateBuckets.get(ip) || { count: 0, reset: now + RATE_WINDOW_MS };
-  if (now > bucket.reset) { bucket.count = 0; bucket.reset = now + RATE_WINDOW_MS; }
-  bucket.count += 1;
-  rateBuckets.set(ip, bucket);
-  // Periodic cleanup to prevent memory growth
-  if (rateBuckets.size > 10_000) {
-    for (const [k, v] of rateBuckets) if (v.reset < now) rateBuckets.delete(k);
+async function checkRateLimit(ip) {
+  const safeIp = ip.replace(/[^a-zA-Z0-9.:_-]/g, ''); // sanitize for document ID
+  const ref = db.collection('_rate_limits').doc(safeIp);
+  
+  try {
+    return await db.runTransaction(async (t) => {
+      const doc = await t.get(ref);
+      const now = Date.now();
+      
+      if (!doc.exists) {
+        t.set(ref, { count: 1, reset: now + RATE_WINDOW_MS });
+        return true;
+      }
+      
+      const data = doc.data();
+      let { count, reset } = data;
+      
+      if (now > reset) {
+        count = 0;
+        reset = now + RATE_WINDOW_MS;
+      }
+      
+      if (count >= RATE_LIMIT) {
+        return false;
+      }
+      
+      t.update(ref, { count: count + 1, reset });
+      return true;
+    });
+  } catch (error) {
+    console.error('Rate limit transaction failed:', error);
+    // Fail closed or open? Fail open to not block legitimate traffic on DB errors.
+    return true;
   }
-  return bucket.count <= RATE_LIMIT;
 }
 
 /**
@@ -65,7 +93,7 @@ function validateQuestion(input) {
   }
   return { valid: true, value: trimmed };
 }
-const { onRequest } = require('firebase-functions/v2/https');
+
 /**
  * Cloud Function to handle Gemini AI requests.
  * Incorporates prompt validation, rate limiting, and secure API communication.
@@ -86,7 +114,8 @@ exports.askGemini = onRequest({ region: 'asia-south1', maxInstances: 1 }, async 
 
   // Rate limit by IP
   const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip || 'unknown';
-  if (!checkRateLimit(ip)) {
+  const allowed = await checkRateLimit(ip);
+  if (!allowed) {
     return res.status(429).json({ error: 'Rate limit exceeded', answer: 'Too many requests. Please wait a minute and try again.' });
   }
 
@@ -143,4 +172,5 @@ exports.askGemini = onRequest({ region: 'asia-south1', maxInstances: 1 }, async 
 });
 
 // Export internals for testing (not used by Cloud Functions runtime)
-exports._testHelpers = { validateQuestion, checkRateLimit, rateBuckets, RATE_LIMIT, RATE_WINDOW_MS };
+// Include db reference so tests can mock it.
+exports._testHelpers = { validateQuestion, checkRateLimit, db, RATE_LIMIT, RATE_WINDOW_MS };

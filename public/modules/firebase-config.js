@@ -18,6 +18,10 @@ import {
   getAnalytics,
   logEvent,
 } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js';
+import {
+  initializeAppCheck,
+  ReCaptchaV3Provider,
+} from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-appcheck.js';
 
 /** @type {import('firebase/app').FirebaseOptions} */
 const firebaseConfig = {
@@ -33,6 +37,19 @@ const firebaseConfig = {
 
 // Initialize Google Services
 const app = initializeApp(firebaseConfig);
+
+// Initialize App Check to protect Firestore writes.
+// Note: Requires configuring reCAPTCHA v3 in the Firebase Console.
+// Using a placeholder site key until one is provided.
+try {
+  initializeAppCheck(app, {
+    provider: new ReCaptchaV3Provider('6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'), // Example/Test key. Replace with real site key.
+    isTokenAutoRefreshEnabled: true
+  });
+} catch (e) {
+  console.warn('App Check initialization failed:', e);
+}
+
 const auth = getAuth(app);
 const db = getFirestore(app);
 const analytics = getAnalytics(app);

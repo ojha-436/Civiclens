@@ -9,9 +9,58 @@ import { createRequire } from 'node:module';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 
-// Load the Cloud Function module (CommonJS) and extract test helpers
+// --- Mock firebase-admin before requiring the function ---
+const rateBuckets = new Map();
+
+const mockFirestore = {
+  collection: (colName) => ({
+    doc: (docId) => ({ id: docId })
+  }),
+  runTransaction: async (cb) => {
+    const t = {
+      get: async (ref) => {
+        const data = rateBuckets.get(ref.id);
+        return { exists: !!data, data: () => data };
+      },
+      set: (ref, data) => rateBuckets.set(ref.id, data),
+      update: (ref, data) => {
+        const current = rateBuckets.get(ref.id);
+        rateBuckets.set(ref.id, { ...current, ...data });
+      }
+    };
+    return await cb(t);
+  }
+};
+
+const fbFuncPath = require.resolve('firebase-functions/v2/https', { paths: [join(__dirname, '..', 'deploy')] });
+require.cache[fbFuncPath] = {
+  id: fbFuncPath,
+  filename: fbFuncPath,
+  loaded: true,
+  exports: { onRequest: (opts, cb) => cb }
+};
+
+// Mock firebase-admin/app
+const adminAppPath = require.resolve('firebase-admin/app', { paths: [join(__dirname, '..', 'deploy')] });
+require.cache[adminAppPath] = {
+  id: adminAppPath,
+  filename: adminAppPath,
+  loaded: true,
+  exports: { initializeApp: () => {} }
+};
+
+// Mock firebase-admin/firestore
+const adminFirestorePath = require.resolve('firebase-admin/firestore', { paths: [join(__dirname, '..', 'deploy')] });
+require.cache[adminFirestorePath] = {
+  id: adminFirestorePath,
+  filename: adminFirestorePath,
+  loaded: true,
+  exports: { getFirestore: () => mockFirestore }
+};
+
+// Now require the function
 const { _testHelpers } = require(join(__dirname, '..', 'deploy', 'gemini-function.js'));
-const { validateQuestion, checkRateLimit, rateBuckets, RATE_LIMIT } = _testHelpers;
+const { validateQuestion, checkRateLimit, RATE_LIMIT } = _testHelpers;
 
 // --- validateQuestion tests ---
 
@@ -67,50 +116,52 @@ test('CF: validateQuestion accepts exactly 500-char input (boundary)', () => {
   assert.equal(validateQuestion(str).valid, true);
 });
 
-// --- checkRateLimit tests ---
+// --- checkRateLimit tests (now async) ---
 
-test('CF: checkRateLimit allows first request', () => {
+test('CF: checkRateLimit allows first request', async () => {
   rateBuckets.clear();
-  assert.equal(checkRateLimit('test-ip-1'), true);
+  assert.equal(await checkRateLimit('test-ip-1'), true);
 });
 
-test('CF: checkRateLimit allows up to RATE_LIMIT requests', () => {
+test('CF: checkRateLimit allows up to RATE_LIMIT requests', async () => {
   rateBuckets.clear();
   for (let i = 0; i < RATE_LIMIT; i++) {
-    assert.equal(checkRateLimit('test-ip-2'), true, `Request ${i + 1} should be allowed`);
+    assert.equal(await checkRateLimit('test-ip-2'), true, `Request ${i + 1} should be allowed`);
   }
 });
 
-test('CF: checkRateLimit blocks request RATE_LIMIT+1', () => {
+test('CF: checkRateLimit blocks request RATE_LIMIT+1', async () => {
   rateBuckets.clear();
   for (let i = 0; i < RATE_LIMIT; i++) {
-    checkRateLimit('test-ip-3');
+    await checkRateLimit('test-ip-3');
   }
-  assert.equal(checkRateLimit('test-ip-3'), false, 'Should be rate-limited');
+  assert.equal(await checkRateLimit('test-ip-3'), false, 'Should be rate-limited');
 });
 
-test('CF: checkRateLimit tracks IPs independently', () => {
+test('CF: checkRateLimit tracks IPs independently', async () => {
   rateBuckets.clear();
   for (let i = 0; i < RATE_LIMIT; i++) {
-    checkRateLimit('ip-a');
+    await checkRateLimit('ip-a');
   }
   // ip-b should still be allowed
-  assert.equal(checkRateLimit('ip-b'), true);
+  assert.equal(await checkRateLimit('ip-b'), true);
   // ip-a should be blocked
-  assert.equal(checkRateLimit('ip-a'), false);
+  assert.equal(await checkRateLimit('ip-a'), false);
 });
 
-test('CF: checkRateLimit resets after window expires', () => {
+test('CF: checkRateLimit resets after window expires', async () => {
   rateBuckets.clear();
   // Fill the bucket
   for (let i = 0; i < RATE_LIMIT; i++) {
-    checkRateLimit('test-ip-reset');
+    await checkRateLimit('test-ip-reset');
   }
-  assert.equal(checkRateLimit('test-ip-reset'), false);
+  assert.equal(await checkRateLimit('test-ip-reset'), false);
+  
   // Manually expire the bucket
   const bucket = rateBuckets.get('test-ip-reset');
   bucket.reset = Date.now() - 1;
   rateBuckets.set('test-ip-reset', bucket);
+  
   // Should be allowed again
-  assert.equal(checkRateLimit('test-ip-reset'), true);
+  assert.equal(await checkRateLimit('test-ip-reset'), true);
 });
