@@ -203,9 +203,3 @@ export class ElectionAssistant extends HTMLElement {
 
 customElements.define('election-assistant', ElectionAssistant);
 
-// Backward compatibility for app.js
-export function renderAssistant(root) {
-  if (root && root.tagName.toLowerCase() !== 'election-assistant') {
-    console.warn('Using legacy renderAssistant method without <election-assistant>');
-  }
-}

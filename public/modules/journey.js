@@ -64,13 +64,3 @@ export class VoterJourney extends HTMLElement {
 
 customElements.define('voter-journey', VoterJourney);
 
-// Backward compatibility for app.js
-export function renderJourney(grid, detail, stages) {
-  // If `grid` is the new custom element itself:
-  if (grid && grid.tagName.toLowerCase() === 'voter-journey') {
-    grid.data = stages;
-  } else if (grid && detail) {
-    // Legacy fallback (should ideally be removed once app.js is fully migrated)
-    console.warn('Using legacy renderJourney method');
-  }
-}

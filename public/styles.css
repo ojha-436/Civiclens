@@ -10,9 +10,9 @@
   overflow: visible; clip: auto; white-space: normal;
 }
 
-/* High-contrast focus rings for keyboard users */
+/* High-contrast focus rings for keyboard users — uses civic-accent #FF9933 */
 :focus-visible {
-  outline: 3px solid #d72638;
+  outline: 3px solid #FF9933;
   outline-offset: 2px;
 }
 
@@ -43,4 +43,17 @@ html { scroll-behavior: smooth; }
 .quiz-opt[data-state="incorrect"] {
   background-color: #fee2e2; /* Tailwind bg-red-100 */
   border-color: #dc2626;     /* Tailwind border-red-600 */
+}
+
+/* Mobile navigation menu (toggled via single class instead of multiple Tailwind classes) */
+.mobile-nav-open {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 4rem;
+  right: 1rem;
+  background: white;
+  padding: 1rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
 }

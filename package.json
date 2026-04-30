@@ -32,7 +32,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/YOUR_USERNAME/civiclens-india"
+    "url": "https://github.com/ojha-436/Civiclens"
   },
   "devDependencies": {
     "eslint": "^10.2.1",

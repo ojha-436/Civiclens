@@ -86,8 +86,8 @@ This section maps directly to the six judging parameters so reviewers can verify
 - **ARIA radiogroup** with `aria-checked` state for quiz and EVM simulator.
 - **Progress bar** with `role="progressbar"`, `aria-valuenow`, `aria-valuemin`, `aria-valuemax` in the quiz.
 - **Explicit language declaration** — `<html lang="en">`.
-- **High-contrast colours** — body text 15.3:1 contrast ratio (AAA), all interactive elements exceed 4.5:1 (AA).
-- **Focus-visible** with 3px `#FF9933` ring and 2px offset — exceeds default browser outlines.
+- **High-contrast colours** — body text `#1a1a1a` on `#FFF8F0` achieves 14.7:1 contrast ratio (AAA), all interactive elements exceed 4.5:1 (AA).
+- **Focus-visible** with 3px `#FF9933` (civic-accent) ring and 2px offset — exceeds default browser outlines.
 - **Reduced-motion support** — `prefers-reduced-motion: reduce` disables all transitions.
 - **Responsive reflow** at 320 px viewport without horizontal scroll.
 - **No-JS fallback** — `<noscript>` block directs users to eci.gov.in.
@@ -103,7 +103,7 @@ CivicLens India uses **five distinct GCP/Google services** as core parts of its 
 |---|---|---|
 | **Firebase Hosting** (GCP) | Global CDN, HTTPS, static hosting with security headers | `firebase.json`, Mumbai region (`asia-south1`) |
 | **GCP Cloud Functions (2nd gen)** | Serverless backend for the Gemini assistant | `deploy/gemini-function.js`, Node.js 20 runtime |
-| **Gemini 1.5 Flash API** | AI-powered fallback for voter questions not in the local FAQ | Called from Cloud Function with safety filters |
+| **Gemini 2.5 Flash API** | AI-powered fallback for voter questions not in the local FAQ | Called from Cloud Function with safety filters |
 | **Firebase Hosting Rewrites** | Clean URL routing (`/ask` → Cloud Function) without CORS preflights | `firebase.json` rewrites block |
 | **Google Analytics 4** | Anonymous engagement metrics, IP anonymisation on, Do-Not-Track respected | `public/modules/analytics.js` |
 
@@ -150,7 +150,7 @@ All integrations are **opt-in and privacy-preserving**. The app works fully offl
                    │
                    ▼
 ┌─────────────────────────────────────────────┐
-│  Gemini 1.5 Flash API                       │
+│  Gemini 2.5 Flash API                       │
 │  Safety filters: BLOCK_MEDIUM_AND_ABOVE ×4  │
 └─────────────────────────────────────────────┘
 ```

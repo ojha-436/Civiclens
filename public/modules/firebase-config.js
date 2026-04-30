@@ -1,7 +1,9 @@
-// public/modules/firebase-config.js
+/**
+ * @module firebase-config
+ * @description Initialises Firebase services for CivicLens India.
+ *   Exports auth, Firestore, and Analytics instances used by the quiz module.
+ */
 
-// Import Firebase directly from Google's CDN
-// @ts-nocheck
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js';
 import {
   getAuth,
@@ -17,7 +19,7 @@ import {
   logEvent,
 } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js';
 
-// REPLACE THIS with your actual config from Step 1
+/** @type {import('firebase/app').FirebaseOptions} */
 const firebaseConfig = {
   projectId: 'civiclens-faf3d',
   appId: '1:340835039228:web:ec420c7c1a084ce075e479',

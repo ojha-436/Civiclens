@@ -50,19 +50,9 @@ function wireMobileMenu(btn) {
   btn.addEventListener('click', () => {
     const nav = document.querySelector('nav');
     if (!nav) return;
-    const open = nav.classList.toggle('hidden') === false;
-    [
-      'flex',
-      'flex-col',
-      'absolute',
-      'top-16',
-      'right-4',
-      'bg-white',
-      'p-4',
-      'shadow-lg',
-      'rounded',
-    ].forEach((c) => nav.classList.toggle(c, open));
-    btn.setAttribute('aria-expanded', String(open));
+    const isOpen = nav.classList.toggle('mobile-nav-open');
+    nav.classList.toggle('hidden', !isOpen);
+    btn.setAttribute('aria-expanded', String(isOpen));
   });
 }
 

@@ -36,7 +36,7 @@ async function saveScoreToCloud(finalScore, tier) {
       timestamp: new Date(),
     });
     logEvent(analytics, 'quiz_completed', { score: finalScore, tier: tier });
-    console.log('✅ Score saved to Google Cloud Firestore & Analytics logged!');
+
   } catch (error) {
     console.error('Firebase Cloud integration error:', error);
   }
@@ -181,9 +181,3 @@ export class CivicQuiz extends HTMLElement {
 
 customElements.define('civic-quiz', CivicQuiz);
 
-// Backward compatibility for app.js if we keep `renderQuiz` signature for now
-export function renderQuiz(root, questions) {
-  if (root && root.tagName.toLowerCase() === 'civic-quiz') {
-    root.data = questions;
-  }
-}

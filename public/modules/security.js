@@ -43,9 +43,3 @@ export class SecurityGrid extends HTMLElement {
 
 customElements.define('security-grid', SecurityGrid);
 
-// Backward compatibility for app.js
-export function renderSecurity(root, items) {
-  if (root && root.tagName.toLowerCase() === 'security-grid') {
-    root.data = items;
-  }
-}

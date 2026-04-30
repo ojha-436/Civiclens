@@ -9,8 +9,8 @@ const FICTIONAL_CANDIDATES = [
   { id: 'none', name: 'NOTA', party: 'None Of The Above', symbol: '🚫' },
 ];
 
-const STEP_LABELS = ['ID Check', 'Indelible Ink', 'Cast Vote', 'VVPAT Check', 'Done'];
-const STEP_KEYS = ['id', 'ink', 'evm', 'vvpat', 'done'];
+const STEP_LABELS = ['ID Check', 'Indelible Ink', 'Cast Vote', 'VVPAT Check', 'Done', 'Mismatch'];
+const STEP_KEYS = ['id', 'ink', 'evm', 'vvpat', 'done', 'mismatch'];
 
 function renderProgress(step) {
   return `
@@ -148,7 +148,7 @@ export class BallotSimulator extends HTMLElement {
     const body = this.getStepRenderer()();
     this.innerHTML = `
       <div class="max-w-2xl mx-auto">
-        ${this.state.step !== 'mismatch' ? renderProgress(this.state.step) : ''}
+        ${renderProgress(this.state.step)}
         <div class="border-2 border-civic-deep rounded-lg p-6 bg-white">${body}</div>
         <div class="mt-3 text-xs text-gray-500 text-center">
           For educational use only. Candidates and parties shown are fictional.
@@ -197,10 +197,3 @@ export class BallotSimulator extends HTMLElement {
 
 customElements.define('ballot-simulator', BallotSimulator);
 
-// Backward compatibility for app.js
-export function renderSimulator(root) {
-  // Now simply ensuring the root is there. Real rendering happens in connectedCallback.
-  if (root && root.tagName.toLowerCase() !== 'ballot-simulator') {
-    console.warn('Using legacy renderSimulator method without <ballot-simulator>');
-  }
-}
