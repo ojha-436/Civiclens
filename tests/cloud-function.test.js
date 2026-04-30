@@ -32,30 +32,20 @@ const mockFirestore = {
   }
 };
 
-const fbFuncPath = require.resolve('firebase-functions/v2/https', { paths: [join(__dirname, '..', 'deploy')] });
-require.cache[fbFuncPath] = {
-  id: fbFuncPath,
-  filename: fbFuncPath,
-  loaded: true,
-  exports: { onRequest: (opts, cb) => cb }
-};
+const Module = require('node:module');
+const originalLoad = Module._load;
 
-// Mock firebase-admin/app
-const adminAppPath = require.resolve('firebase-admin/app', { paths: [join(__dirname, '..', 'deploy')] });
-require.cache[adminAppPath] = {
-  id: adminAppPath,
-  filename: adminAppPath,
-  loaded: true,
-  exports: { initializeApp: () => {} }
-};
-
-// Mock firebase-admin/firestore
-const adminFirestorePath = require.resolve('firebase-admin/firestore', { paths: [join(__dirname, '..', 'deploy')] });
-require.cache[adminFirestorePath] = {
-  id: adminFirestorePath,
-  filename: adminFirestorePath,
-  loaded: true,
-  exports: { getFirestore: () => mockFirestore }
+Module._load = function(request, parent, isMain) {
+  if (request === 'firebase-functions/v2/https') {
+    return { onRequest: (opts, cb) => cb };
+  }
+  if (request === 'firebase-admin/app') {
+    return { initializeApp: () => {} };
+  }
+  if (request === 'firebase-admin/firestore') {
+    return { getFirestore: () => mockFirestore };
+  }
+  return originalLoad.apply(this, arguments);
 };
 
 // Now require the function
