@@ -23,7 +23,7 @@ export const APP_CONFIG = {
     //   3. Register the key in Firebase Console → App Check → Apps → Register.
     //   4. Click Enforce in Firebase Console → App Check → Apps.
     // The current key is a Google test key that never blocks any request.
-    RECAPTCHA_SITE_KEY: '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI', // ← REPLACE WITH PRODUCTION KEY
+    RECAPTCHA_SITE_KEY: '6Lcn6dEsAAAAAH_LBY5j0gIB5B1BEi9ks_KdOsew', // Production key for civiclens-faf3d.web.app
   },
   MAX_QUESTION_LENGTH: 500,
 };
