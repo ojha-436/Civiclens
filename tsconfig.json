@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    // Type-check JS files via JSDoc — no .ts conversion needed
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+
+    // Strict type checking — catches real bugs, not just syntax
+    "strict": true,
+    "noImplicitAny": false,
+
+    // Module settings: bundler resolution handles CDN URLs in globals.d.ts
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "target": "ES2020",
+
+    // Allow default imports from CommonJS modules
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+
+    // Use globals.d.ts for CDN + firebase/app ambient declarations
+    "typeRoots": [],
+    "types": []
+  },
+  "include": [
+    "public/**/*.js",
+    "globals.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "deploy/**",
+    "tests/**",
+    "coverage/**"
+  ]
+}

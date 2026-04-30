@@ -21,6 +21,10 @@ jobs:
           node-version: '20'
       - name: Run tests
         run: npm test
+      - name: Run type check (JSDoc via tsc --noEmit)
+        run: |
+          npm install --save-dev typescript
+          npm run typecheck
       - name: Verify repo size (<10 MB)
         run: |
           SIZE=$(du -sb . --exclude=.git --exclude=node_modules | cut -f1)
