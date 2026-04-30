@@ -1,3 +1,5 @@
+/// <reference lib="webworker" />
+// @ts-check
 /**
  * CivicLens India Service Worker
  * Strategy:
@@ -5,40 +7,49 @@
  *  - Data JSON: stale-while-revalidate (fast + fresh)
  *  - Assistant API: network-only (always live)
  */
-const CACHE_NAME = 'civiclens-v2';
+
+/** @type {ServiceWorkerGlobalScope} */
+const sw = /** @type {any} */ (self);
+
+const CACHE_NAME = 'civiclens-v3';
 const APP_SHELL = [
   '/',
   '/index.html',
   '/tailwind.css',
   '/styles.css',
   '/app.js',
+  '/og-image.svg',
   '/modules/journey.js',
   '/modules/simulator.js',
   '/modules/security.js',
   '/modules/quiz.js',
   '/modules/assistant.js',
+  '/modules/assistant-utils.js',
   '/modules/security-utils.js',
   '/modules/analytics.js',
   '/modules/config.js',
   '/modules/countdown.js',
   '/modules/firebase-config.js',
   '/modules/quiz-scoring.js',
+  '/modules/i18n.js',
   '/data/journey.json',
   '/data/security.json',
   '/data/quiz.json',
 ];
 
-self.addEventListener('install', (event) => {
-  event.waitUntil(
+sw.addEventListener('install', (event) => {
+  const e = /** @type {ExtendableEvent} */ (event);
+  e.waitUntil(
     caches
       .open(CACHE_NAME)
       .then((cache) => cache.addAll(APP_SHELL))
-      .then(() => self.skipWaiting())
+      .then(() => sw.skipWaiting())
   );
 });
 
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
+sw.addEventListener('activate', (event) => {
+  const e = /** @type {ExtendableEvent} */ (event);
+  e.waitUntil(
     caches
       .keys()
       .then((keys) =>
@@ -46,17 +57,19 @@ self.addEventListener('activate', (event) => {
           keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))
         )
       )
-      .then(() => self.clients.claim())
+      .then(() => sw.clients.claim())
   );
 });
 
-self.addEventListener('fetch', (event) => {
-  const { request } = event;
+sw.addEventListener('fetch', (event) => {
+  const e = /** @type {FetchEvent} */ (event);
+  const { request } = e;
   const url = new URL(request.url);
 
   // Never cache the assistant endpoint — always live
   if (
     url.pathname.startsWith('/ask') ||
+    url.pathname.startsWith('/csp-report') ||
     url.hostname.includes('cloudfunctions.net')
   ) {
     return;
@@ -64,7 +77,7 @@ self.addEventListener('fetch', (event) => {
 
   // External Firebase SDK requests: network-first with cache fallback
   if (url.hostname === 'www.gstatic.com') {
-    event.respondWith(
+    e.respondWith(
       fetch(request)
         .then((resp) => {
           if (resp.ok) {
@@ -73,14 +86,14 @@ self.addEventListener('fetch', (event) => {
           }
           return resp;
         })
-        .catch(() => caches.match(request))
+        .catch(() => caches.match(request).then((r) => r || fetch(request)))
     );
     return;
   }
 
   // Data files: stale-while-revalidate
   if (url.pathname.endsWith('.json')) {
-    event.respondWith(
+    e.respondWith(
       caches.open(CACHE_NAME).then(async (cache) => {
         const cached = await cache.match(request);
         const networkPromise = fetch(request)
@@ -96,19 +109,16 @@ self.addEventListener('fetch', (event) => {
   }
 
   // App shell: cache-first
-  event.respondWith(
-    caches.match(request).then(
-      (cached) =>
-        cached ||
-        fetch(request).then((resp) => {
-          if (resp.ok && request.method === 'GET') {
-            const respClone = resp.clone();
-            caches
-              .open(CACHE_NAME)
-              .then((cache) => cache.put(request, respClone));
-          }
-          return resp;
-        })
-    )
+  e.respondWith(
+    caches.match(request).then((cached) => {
+      if (cached) return cached;
+      return fetch(request).then((resp) => {
+        if (resp.ok && request.method === 'GET') {
+          const respClone = resp.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, respClone));
+        }
+        return resp;
+      });
+    })
   );
 });

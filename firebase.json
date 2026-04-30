@@ -11,6 +11,11 @@
         "region": "asia-south1"
       },
       {
+        "source": "/csp-report",
+        "function": "cspReport",
+        "region": "asia-south1"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
@@ -30,8 +35,12 @@
         "headers": [
           {
             "key": "Content-Security-Policy",
-           "value": "default-src 'self'; script-src 'self' https://www.googletagmanager.com https://www.gstatic.com; style-src 'self'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.cloudfunctions.net https://*.run.app https://www.google-analytics.com https://firestore.googleapis.com https://firebaseinstallations.googleapis.com https://firebase.googleapis.com https://www.gstatic.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests"
-          }, 
+            "value": "default-src 'self'; script-src 'self' https://www.googletagmanager.com https://www.gstatic.com; style-src 'self'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.cloudfunctions.net https://*.run.app https://www.google-analytics.com https://firestore.googleapis.com https://firebaseinstallations.googleapis.com https://firebase.googleapis.com https://www.gstatic.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests; report-uri /csp-report"
+          },
+          {
+            "key": "Report-To",
+            "value": "{\"group\":\"csp-endpoint\",\"max_age\":86400,\"endpoints\":[{\"url\":\"/csp-report\"}]}"
+          },
            {
             "key": "Strict-Transport-Security",
             "value": "max-age=63072000; includeSubDomains; preload"

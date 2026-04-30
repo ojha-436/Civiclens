@@ -13,11 +13,18 @@
   <meta property="og:title" content="CivicLens India — Understand Your Election" />
   <meta property="og:description" content="Interactive, non-partisan civic education on the Indian election process." />
   <meta property="og:locale" content="en_IN" />
+  <meta property="og:url" content="https://civiclens-faf3d.web.app" />
+  <meta property="og:image" content="https://civiclens-faf3d.web.app/og-image.svg" />
+  <meta property="og:image:alt" content="CivicLens India — The election process, demystified." />
+  <meta property="og:site_name" content="CivicLens India" />
 
   <title>CivicLens India — Understand Your Election, Step by Step</title>
 
-  <!-- Performance: preconnect for analytics -->
+  <!-- Performance: preconnect establishes TCP+TLS early for GA and Firebase -->
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
   <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+  <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin />
 
   <!-- Prefetch data — fires in parallel with JS so content is ready on render -->
   <link rel="prefetch" href="./data/journey.json" as="fetch" crossorigin />
@@ -36,7 +43,7 @@
     "@type": "EducationalOrganization",
     "name": "CivicLens India",
     "description": "Non-partisan educational tool explaining the Indian election process.",
-    "url": "https://civiclens-india.web.app",
+    "url": "https://civiclens-faf3d.web.app",
     "inLanguage": "en-IN"
   }
   </script>
@@ -55,16 +62,17 @@
         <div class="text-3xl" aria-hidden="true">🗳️</div>
         <div>
           <h1 class="text-xl font-bold text-civic-deep">CivicLens India</h1>
-          <p class="text-xs text-gray-600">The election process, demystified.</p>
+          <p class="text-xs text-gray-600" data-i18n="tagline">The election process, demystified.</p>
         </div>
       </div>
       <nav aria-label="Main navigation" class="hidden md:flex gap-6 text-sm font-medium">
-        <a href="#journey" class="hover:text-civic-accent">Journey</a>
-        <a href="#simulator" class="hover:text-civic-accent">EVM Simulator</a>
-        <a href="#security" class="hover:text-civic-accent">EVM &amp; VVPAT Security</a>
-        <a href="#quiz" class="hover:text-civic-accent">Quiz</a>
-        <a href="#assistant" class="hover:text-civic-accent">Ask the Assistant</a>
+        <a href="#journey" class="hover:text-civic-accent" data-i18n="nav-journey">Journey</a>
+        <a href="#simulator" class="hover:text-civic-accent" data-i18n="nav-simulator">EVM Simulator</a>
+        <a href="#security" class="hover:text-civic-accent" data-i18n="nav-security">EVM &amp; VVPAT Security</a>
+        <a href="#quiz" class="hover:text-civic-accent" data-i18n="nav-quiz">Quiz</a>
+        <a href="#assistant" class="hover:text-civic-accent" data-i18n="nav-assistant">Ask the Assistant</a>
       </nav>
+      <button id="lang-toggle" class="text-xs font-bold border border-civic-deep text-civic-deep px-2 py-1 rounded hover:bg-civic-deep hover:text-white transition" aria-label="Switch language" title="भाषा बदलें / Switch language">EN | हिं</button>
       <button id="menu-toggle" class="md:hidden p-2" aria-label="Open menu" aria-expanded="false" aria-controls="main-nav"><span aria-hidden="true">☰</span><span class="sr-only">Menu</span></button>
     </div>
   </header>
@@ -73,26 +81,26 @@
 
     <!-- HERO -->
     <section class="text-center py-12 md:py-20" aria-labelledby="hero-heading">
-      <p class="inline-block bg-civic-deep/10 text-civic-deep px-3 py-1 rounded-full text-xs font-semibold tracking-wide uppercase mb-4">
+      <p class="inline-block bg-civic-deep/10 text-civic-deep px-3 py-1 rounded-full text-xs font-semibold tracking-wide uppercase mb-4" data-i18n="hero-badge">
         Non-Partisan · ECI-Sourced · Accessible
       </p>
-      <h2 id="hero-heading" class="text-4xl md:text-6xl font-serif font-bold text-civic-deep leading-tight">
+      <h2 id="hero-heading" class="text-4xl md:text-6xl font-serif font-bold text-civic-deep leading-tight" data-i18n="hero-heading">
         World's largest democracy, step by step.
       </h2>
-      <p class="mt-6 text-lg md:text-xl text-gray-700 max-w-2xl mx-auto">
+      <p class="mt-6 text-lg md:text-xl text-gray-700 max-w-2xl mx-auto" data-i18n="hero-sub">
         Follow your vote from Form 6 registration to the final VVPAT cross-check.
         Every stage explained with the Election Commission of India's actual process.
       </p>
       <div class="mt-8 flex flex-wrap gap-3 justify-center">
-        <a href="#journey" class="bg-civic-deep text-white px-6 py-3 rounded-lg font-semibold hover:bg-civic-accent transition focus:outline-none focus:ring-4 focus:ring-civic-accent/40">Start the Journey →</a>
-        <a href="#simulator" class="bg-white border-2 border-civic-deep text-civic-deep px-6 py-3 rounded-lg font-semibold hover:bg-civic-deep hover:text-white transition focus:outline-none focus:ring-4 focus:ring-civic-accent/40">Try the EVM Simulator</a>
+        <a href="#journey" data-i18n="hero-cta-journey" class="bg-civic-deep text-white px-6 py-3 rounded-lg font-semibold hover:bg-civic-accent transition focus:outline-none focus:ring-4 focus:ring-civic-accent/40">Start the Journey →</a>
+        <a href="#simulator" data-i18n="hero-cta-sim" class="bg-white border-2 border-civic-deep text-civic-deep px-6 py-3 rounded-lg font-semibold hover:bg-civic-deep hover:text-white transition focus:outline-none focus:ring-4 focus:ring-civic-accent/40">Try the EVM Simulator</a>
       </div>
     </section>
 
     <!-- JOURNEY -->
     <section id="journey" class="py-12" aria-labelledby="journey-heading">
-      <h2 id="journey-heading" class="text-3xl font-serif font-bold text-civic-deep mb-2">The Voter's Journey</h2>
-      <p class="text-gray-700 mb-6">Click any stage to see what happens — and why it matters.</p>
+      <h2 id="journey-heading" class="text-3xl font-serif font-bold text-civic-deep mb-2" data-i18n="journey-heading">The Voter's Journey</h2>
+      <p class="text-gray-700 mb-6" data-i18n="journey-sub">Click any stage to see what happens — and why it matters.</p>
       <voter-journey id="journey-container"></voter-journey>
       <div id="journey-detail" class="mt-6 bg-white border-l-4 border-civic-accent p-6 rounded shadow-sm hidden" role="region" aria-live="polite"></div>
       <election-countdown></election-countdown>
@@ -100,29 +108,29 @@
 
     <!-- SIMULATOR -->
     <section id="simulator" class="py-12" aria-labelledby="sim-heading">
-      <h2 id="sim-heading" class="text-3xl font-serif font-bold text-civic-deep mb-2">EVM + VVPAT Simulator</h2>
-      <p class="text-gray-700 mb-6">Walk through the four steps of voting at an Indian polling booth — ID check, indelible ink, EVM button press, VVPAT verification.</p>
+      <h2 id="sim-heading" class="text-3xl font-serif font-bold text-civic-deep mb-2" data-i18n="sim-heading">EVM + VVPAT Simulator</h2>
+      <p class="text-gray-700 mb-6" data-i18n="sim-sub">Walk through the four steps of voting at an Indian polling booth — ID check, indelible ink, EVM button press, VVPAT verification.</p>
       <ballot-simulator id="ballot-simulator"></ballot-simulator>
     </section>
 
     <!-- SECURITY -->
     <section id="security" class="py-12" aria-labelledby="sec-heading">
-      <h2 id="sec-heading" class="text-3xl font-serif font-bold text-civic-deep mb-2">How EVMs and VVPATs Stay Secure</h2>
-      <p class="text-gray-700 mb-6">Every safeguard, explained in plain language.</p>
+      <h2 id="sec-heading" class="text-3xl font-serif font-bold text-civic-deep mb-2" data-i18n="sec-heading">How EVMs and VVPATs Stay Secure</h2>
+      <p class="text-gray-700 mb-6" data-i18n="sec-sub">Every safeguard, explained in plain language.</p>
       <security-grid id="security-grid"></security-grid>
     </section>
 
     <!-- QUIZ -->
     <section id="quiz" class="py-12" aria-labelledby="quiz-heading">
-      <h2 id="quiz-heading" class="text-3xl font-serif font-bold text-civic-deep mb-2">Test Your Knowledge</h2>
-      <p class="text-gray-700 mb-6">Seven questions. Instant feedback. Share your score.</p>
+      <h2 id="quiz-heading" class="text-3xl font-serif font-bold text-civic-deep mb-2" data-i18n="quiz-heading">Test Your Knowledge</h2>
+      <p class="text-gray-700 mb-6" data-i18n="quiz-sub">Seven questions. Instant feedback. Share your score.</p>
       <civic-quiz id="quiz-container"></civic-quiz>
     </section>
 
     <!-- ASSISTANT -->
     <section id="assistant" class="py-12" aria-labelledby="asst-heading">
-      <h2 id="asst-heading" class="text-3xl font-serif font-bold text-civic-deep mb-2">Ask the Assistant</h2>
-      <p class="text-gray-700 mb-6">Ask anything about the Indian election process. Answers are based on Election Commission of India sources.</p>
+      <h2 id="asst-heading" class="text-3xl font-serif font-bold text-civic-deep mb-2" data-i18n="asst-heading">Ask the Assistant</h2>
+      <p class="text-gray-700 mb-6" data-i18n="asst-sub">Ask anything about the Indian election process. Answers are based on Election Commission of India sources.</p>
       <election-assistant id="assistant-container"></election-assistant>
     </section>
 
@@ -130,7 +138,7 @@
 
   <footer class="bg-civic-deep text-white mt-20 py-8">
     <div class="max-w-6xl mx-auto px-4 text-center text-sm">
-      <p class="mb-2">CivicLens India is a non-partisan educational project. Always verify with the Election Commission of India before acting on any information.</p>
+      <p class="mb-2" data-i18n="footer-disclaimer">CivicLens India is a non-partisan educational project. Always verify with the Election Commission of India before acting on any information.</p>
       <p class="text-white/70">Sources: Election Commission of India (eci.gov.in) · Voter Helpline 1950 · Representation of the People Act, 1951 · Conduct of Election Rules, 1961. Open-source under MIT License.</p>
     </div>
   </footer>

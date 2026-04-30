@@ -12,6 +12,7 @@ import './modules/assistant.js';
 import { safeFetchJSON } from './modules/security-utils.js';
 import { initAnalytics, trackEvent } from './modules/analytics.js';
 import './modules/countdown.js';
+import { initI18n } from './modules/i18n.js';
 
 /**
  * Load all content data files in parallel.
@@ -78,6 +79,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   try {
     registerServiceWorker();
     initAnalytics();
+    initI18n();
 
     const { journey, security, quiz } = await loadContent();
 

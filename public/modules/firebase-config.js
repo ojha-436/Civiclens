@@ -22,6 +22,7 @@ import {
   initializeAppCheck,
   ReCaptchaV3Provider,
 } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-appcheck.js';
+import { getPerformance } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-performance.js';
 
 /** @type {import('firebase/app').FirebaseOptions} */
 const firebaseConfig = {
@@ -53,5 +54,7 @@ try {
 const auth = getAuth(app);
 const db = getFirestore(app);
 const analytics = getAnalytics(app);
+// Firebase Performance Monitoring — measures real-user page load and custom traces
+const perf = getPerformance(app);
 
-export { auth, db, analytics, logEvent, signInAnonymously, collection, addDoc };
+export { auth, db, analytics, perf, logEvent, signInAnonymously, collection, addDoc };

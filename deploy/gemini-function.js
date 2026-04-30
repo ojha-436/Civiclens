@@ -100,7 +100,7 @@ function validateQuestion(input) {
  * @param {Object} req - The Express HTTP request object.
  * @param {Object} res - The Express HTTP response object.
  */
-exports.askGemini = onRequest({ region: 'asia-south1', maxInstances: 1 }, async (req, res) => {
+exports.askGemini = onRequest({ region: 'asia-south1', maxInstances: 10 }, async (req, res) => {
   // CORS — allowlist Firebase Hosting domain
   const allowedOrigin = process.env.ALLOWED_ORIGIN || '*';
   res.set('Access-Control-Allow-Origin', allowedOrigin);
@@ -112,8 +112,16 @@ exports.askGemini = onRequest({ region: 'asia-south1', maxInstances: 1 }, async 
   if (req.method === 'OPTIONS') return res.status(204).send('');
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  // Rate limit by IP
-  const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip || 'unknown';
+  // Rate limit by IP — validate format to prevent header spoofing attacks
+  const rawForwarded = typeof req.headers['x-forwarded-for'] === 'string'
+    ? req.headers['x-forwarded-for']
+    : '';
+  const firstHop = rawForwarded.split(',')[0].trim();
+  const IPV4 = /^(\d{1,3}\.){3}\d{1,3}$/;
+  const IPV6 = /^[0-9a-f:]{2,39}$/i;
+  const ip = (IPV4.test(firstHop) || IPV6.test(firstHop))
+    ? firstHop
+    : (req.ip || 'unknown');
   const allowed = await checkRateLimit(ip);
   if (!allowed) {
     return res.status(429).json({ error: 'Rate limit exceeded', answer: 'Too many requests. Please wait a minute and try again.' });
@@ -172,5 +180,32 @@ exports.askGemini = onRequest({ region: 'asia-south1', maxInstances: 1 }, async 
 });
 
 // Export internals for testing (not used by Cloud Functions runtime)
-// Include db reference so tests can mock it.
 exports._testHelpers = { validateQuestion, checkRateLimit, db, RATE_LIMIT, RATE_WINDOW_MS };
+
+/**
+ * CSP violation reporting endpoint.
+ * Receives browser-sent CSP violation reports and logs them to Cloud Logging
+ * so violations are visible in production without exposing stack traces to clients.
+ */
+exports.cspReport = onRequest({ region: 'asia-south1', maxInstances: 5 }, async (req, res) => {
+  res.set('Access-Control-Allow-Origin', process.env.ALLOWED_ORIGIN || '*');
+  if (req.method === 'OPTIONS') return res.status(204).send('');
+  if (req.method !== 'POST') return res.status(405).send('');
+
+  try {
+    const body = req.body || {};
+    // Both report-uri (csp-report key) and Report-To (array) formats
+    const report = body['csp-report'] || (Array.isArray(body) ? body[0] : body);
+    console.warn('CSP violation:', JSON.stringify({
+      documentUri:    report['document-uri']    || report.documentURL     || '',
+      violatedDir:    report['violated-directive'] || report.effectiveDirective || '',
+      blockedUri:     report['blocked-uri']      || report.blockedURL     || '',
+      referrer:       report['referrer']         || '',
+    }));
+  } catch (e) {
+    // Malformed report — log minimally and discard
+    console.warn('CSP report parse error:', e.message);
+  }
+
+  return res.status(204).send('');
+});

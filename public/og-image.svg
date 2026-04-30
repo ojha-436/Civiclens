@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#FFF8F0"/>
+
+  <!-- Top tricolor bar -->
+  <rect x="0" y="0" width="1200" height="12" fill="#FF9933"/>
+  <rect x="0" y="12" width="1200" height="12" fill="#FFFFFF"/>
+  <rect x="0" y="24" width="1200" height="12" fill="#138808"/>
+
+  <!-- Bottom tricolor bar -->
+  <rect x="0" y="594" width="1200" height="12" fill="#138808"/>
+  <rect x="0" y="606" width="1200" height="12" fill="#FFFFFF"/>
+  <rect x="0" y="618" width="1200" height="12" fill="#FF9933"/>
+
+  <!-- Left accent border -->
+  <rect x="0" y="36" width="8" height="558" fill="#000080"/>
+
+  <!-- Ballot box icon -->
+  <text x="80" y="200" font-size="130" font-family="serif">🗳️</text>
+
+  <!-- Main heading -->
+  <text x="80" y="300" font-family="Georgia, serif" font-size="72" font-weight="bold" fill="#000080">CivicLens India</text>
+
+  <!-- Subheading -->
+  <text x="80" y="370" font-family="Georgia, serif" font-size="38" fill="#1a1a1a">The election process, demystified.</text>
+
+  <!-- Tag line -->
+  <text x="80" y="430" font-family="Arial, sans-serif" font-size="26" fill="#555555">Non-Partisan · ECI-Sourced · Accessible</text>
+
+  <!-- Divider -->
+  <rect x="80" y="460" width="1040" height="3" fill="#FF9933"/>
+
+  <!-- Features row -->
+  <text x="80" y="510" font-family="Arial, sans-serif" font-size="22" fill="#000080">🗓 Voter Journey</text>
+  <text x="290" y="510" font-family="Arial, sans-serif" font-size="22" fill="#000080">🖥 EVM Simulator</text>
+  <text x="530" y="510" font-family="Arial, sans-serif" font-size="22" fill="#000080">🔒 Security Guide</text>
+  <text x="750" y="510" font-family="Arial, sans-serif" font-size="22" fill="#000080">📝 Quiz</text>
+  <text x="880" y="510" font-family="Arial, sans-serif" font-size="22" fill="#000080">🤖 AI Assistant</text>
+
+  <!-- URL -->
+  <text x="80" y="565" font-family="Arial, sans-serif" font-size="20" fill="#888888">civiclens-faf3d.web.app</text>
+</svg>

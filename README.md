@@ -4,7 +4,7 @@
 > An interactive, non-partisan web assistant that teaches citizens how the Indian election process works — from Form 6 registration to VVPAT verification.
 
 [![CI](https://img.shields.io/badge/CI-passing-brightgreen)]()
-[![Tests](https://img.shields.io/badge/tests-46%2F46-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-79%2F79-brightgreen)]()
 [![Deploy](https://img.shields.io/badge/Deploy-Firebase%20(GCP)-orange)]()
 [![WCAG](https://img.shields.io/badge/WCAG-2.1%20AA-green)]()
 [![License](https://img.shields.io/badge/License-MIT-blue)]()
@@ -63,12 +63,14 @@ This section maps directly to the six judging parameters so reviewers can verify
 
 **Validation of functionality.**
 
-- **63 automated tests passing** across 5 files:
+- **79 automated tests passing** across 7 files:
   - `data.test.js` (11 tests) — content integrity, source citations, MCC compliance
   - `security-utils.test.js` (12 tests) — XSS escaping, input validation, injection blocks
   - `quiz-logic.test.js` (12 tests) — imports REAL production `scoreToTier` from `quiz-scoring.js`, verifies full return signature including `pct`, fact-accuracy of quiz answers
   - `cloud-function.test.js` (15 tests) — server-side `validateQuestion` (10 cases including boundary, injection patterns), `checkRateLimit` (5 cases: allow, block, multi-IP isolation, window expiry)
   - `accessibility.test.js` (13 tests) — WCAG 2.1 structural conformance
+  - `integration.test.js` (9 tests) — end-to-end assistant flow, FAQ resolution, rate limiter, render pipeline
+  - `performance.test.js` (7 tests) — rate-limiter load simulation, concurrent-request isolation, window-reset throughput
 - **Coverage reporting** — `npm run test:coverage` generates text + HTML coverage report via `c8`. `quiz-scoring.js` at 100% coverage.
 - **Production imports** — quiz tests import the real `scoreToTier` from source (not a local reproduction), catching regressions in return signature.
 - **Run with**: `npm test` (no coverage) or `npm run test:coverage` (with coverage)
@@ -177,17 +179,23 @@ civiclens/
 │   │   ├── quiz.js              # exports pure scoreToTier()
 │   │   ├── assistant.js
 │   │   ├── security-utils.js    # escapeHTML, validateQuestion, rate limiter
-│   │   └── analytics.js         # GA4, DNT-aware, lazy-loaded
+│   │   ├── analytics.js         # GA4, DNT-aware, lazy-loaded
+│   │   ├── countdown.js         # Live countdown timer to 2029 election
+│   │   ├── i18n.js              # English/Hindi translations + language switcher
+│   │   └── firebase-config.js   # Auth, Firestore, Analytics, App Check, Perf
 │   └── data/
 │       ├── journey.json
 │       ├── security.json
 │       └── quiz.json
-├── tests/                       # 46 tests, zero dependencies
+├── tests/                       # 79 tests, zero dependencies
 │   ├── run.js
 │   ├── data.test.js
 │   ├── security-utils.test.js
 │   ├── quiz-logic.test.js
-│   └── accessibility.test.js
+│   ├── cloud-function.test.js
+│   ├── accessibility.test.js
+│   ├── integration.test.js      # E2E assistant + render pipeline
+│   └── performance.test.js      # Rate-limiter load tests
 ├── deploy/
 │   ├── gemini-function.js       # Hardened Cloud Function
 │   └── package.json
